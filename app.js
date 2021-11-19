@@ -19,13 +19,6 @@ app.get("/acceleration_sensors.html", (req,res) => {
     res.sendFile(path.join(__dirname, './public/acceleration_sensors.html'  ))
 })
 
-app.get("/chart_Vernier", (req,res) => {
-    res.sendFile(path.join(__dirname, './public/chart_Vernier.html'  ))
-})
-
-app.get("/two_sensors", (req,res) => {
-    res.sendFile(path.join(__dirname, './public/two_sensors.html'  ))
-})
 
 app.get("/start", (req,res) => {
     res.sendFile(path.join(__dirname, './public/start.html' ))
@@ -37,4 +30,13 @@ app.get("/example", (req,res) => {
 
 app.listen(PORT,()=>{
     console.log("Server is running at Port " + PORT)
+})
+
+//orginals from Vernier
+app.get("/chart_Vernier", (req,res) => {
+    res.sendFile(path.join(__dirname, './public/vernier_original/chart_Vernier.html'  ))
+})
+
+app.get("/two_sensors", (req,res) => {
+    res.sendFile(path.join(__dirname, './public/vernier_original/two_sensors.html'  ))
 })
