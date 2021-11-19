@@ -77,7 +77,8 @@ function createSelectButton_1 () {
         
         if (!navigator.bluetooth && !navigator.hid) {
             selectDeviceBtn.style.visibility='hidden'
-        }   
+        } 
+
     } catch (err) {
         console.log(err)
     }
@@ -100,7 +101,7 @@ function enableAllSensors (device) {
 }
 
 // add line function to add new dataset for each device connected
-function addLine(device_name, sensor_name ){
+function addLine (device_name, sensor_name) {
     try {
         const colorName = colorNames[config.data.datasets.length % colorNames.length]
         const newColor = window.chartColors[colorName]
@@ -124,5 +125,42 @@ function addLine(device_name, sensor_name ){
 }
 
 
+// add line function to add new dataset for each device connected
+async function createStartStopDevice(){
+    try {
+        // connect to the gdx device  
+        const bleDevice = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: 'GDX' }],
+            optionalServices: ['d91714ef-28b9-4f91-ba16-f0d9a604f112']
+        })
+
+        let device = await godirect.createDevice(bleDevice,  {open: false, startMeasurements: false})
+        document.getElementById("start_stop_collection").hidden = false
+
+        return device
+
+    } catch (err) {
+        console.log(err)
+        return undefined
+    }
+}
+
+// start collection function 
+const startStopCollection = async () => {  
+    if (!collecting) {
+        collecting = true
+        collectBtn.textContent = `Stop Collection`
+        collectBtn.style.backgroundColor = 'rgb(165, 124, 118)'
+        gdxDevice.start(delta*1000)
+        count = 0.0
+        // update the table with the new sensor values
+        window.myLine.update()                  
+    } else {
+        collecting = false
+        collectBtn.textContent = `Start Collection`
+        collectBtn.style.backgroundColor = 'rgb(145, 226, 152)'
+        gdxDevice.stop()
+     }        
+}
 
 
