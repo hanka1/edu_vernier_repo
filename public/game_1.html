@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+    <!--The HTML <head> element is a container for the following elements: <title>, <style>, <meta>, <link>, <script>, and <base>.-->
+<head>
+    <title>My Page Title</title>
+    <link rel="icon" type="icon" href="images/favicon.ico">
+    <script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script src= "sensor.js"></script>
+</head>
+
+<body>
+        <!--Vernier upload-->
+        <div>
+            <h1>Vernier Go Direct<sup>&reg</sup>Example</h1>
+            <p>
+                This example shows how you can use the <a href="https://www.npmjs.com/package/@vernier/godirect">Vernier Go Direct Module</a> to connect to a <a href="https://www.vernier.com/products/sensors/go-direct-sensors/">Vernier Go Direct Sensor</a> and plot the collected data.
+    
+            </p>
+    
+            <p id="connection_type">
+                <input type="radio" id="ble" name="type" value="1" checked>
+                <label id="ble_label" for="ble">Bluetooth</label>
+                <input type="radio" id="usb" name="type" value="0">
+                <label id="usb_label" for="usb">USB</label><br>
+            </p>
+            <!--button id="select_device" style="border: 1px solid black;"> Select Go Direct Device </button-->
+            <pre id="output"></pre>
+    
+            <!--set up canvas for chart to be created-->
+            <div style="width:75%;">
+                <canvas id="canvas2"></canvas>
+            </div>
+        </div>
+   
+</body>
+
+<style>
+    body {
+        margin: 15px;
+    }
+</style>
+
+
+</html>
