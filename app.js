@@ -27,6 +27,10 @@ app.get("/two_sensors", (req,res) => {
     res.sendFile(path.join(__dirname, './public/two_sensors.html'  ))
 })
 
+app.get("/start", (req,res) => {
+    res.sendFile(path.join(__dirname, './public/start.html' ))
+})
+
 app.get("/example", (req,res) => {
     res.sendFile(path.join(__dirname, './public/example.html' ))
 })
