@@ -6,6 +6,7 @@
     <!--import chart.js and Go Direct library-->
     <script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+    <link rel="stylesheet" href="style.css">
     
       <style>
         canvas{
@@ -14,21 +15,7 @@
             -ms-user-select: none;
         }
 
-        .button_start{
-            background-color: rgb(145, 226, 152);
-            padding: 10px;
-            font-size: 16px;
-            width: 400px;
-            text-align-last: left;
-        }
 
-        .button_stop{
-            background-color: rgb(165, 124, 118);
-            padding: 10px;
-            font-size: 16px;
-            width: 400px;
-            text-align-last: left;
-        }
       </style>
   </head>
 
@@ -52,11 +39,17 @@
         </div>
 
         <!--run the startStopCollection function when the button is pressed-->
+        
+        <div id="sensor_array"></div>
+        <br>
+        <button  hidden=true class="button_start" id="choose-sensors" onclick="choosenSensors()">Choose sensors</button>
         <button hidden=true  class="button_start" id="start_stop_collection" onclick="startStopCollection()" >Start Collection</button>
 
         <pre id="output"></pre>
         
         <script src= "utils.js"></script>
         <script src= "start.js"></script>
+    
     </body>
+
 </html>

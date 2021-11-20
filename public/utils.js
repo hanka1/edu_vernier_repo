@@ -15,6 +15,8 @@ const bleLabel = document.querySelector('#ble_label').id
 const selectDeviceBtn = document.querySelector('#select_device')
 const output = document.querySelector('#output')
 const colorNames = Object.keys(window.chartColors)
+const sensorArray = document.querySelector('#sensor_array')
+const collectBtn = document.querySelector('#start_stop_collection')
 
 // configuration for the chart, change all initial chart settings here
 const config = {
@@ -22,8 +24,9 @@ const config = {
 			data: {
 				labels: [0,1,2,3,4,5,6,7,8,9,10],
 				datasets: [],
-      },
-        options: {
+    },
+    
+    options: {
 				responsive: true,
 				title: {
 					display: true,
@@ -81,6 +84,8 @@ function createSelectButton_1 () {
 
     } catch (err) {
         console.log(err)
+        output.textContent += (err.toString())
+        output.textContent += ('Try to reload page and/or switch off / switch on device.')
     }
 }
 
@@ -92,8 +97,50 @@ function enableAllSensors (device) {
                 sensor.enabled = true
                 sensor.emit('state-changed', sensor)
             }
-           
         }) 
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//choose device sensors to be used for measurements
+function chooseSensors (device) {
+    try {
+        //to show all sensors
+        let i = 0
+        device.sensors.forEach(sensor => {
+            sensor.i = i
+            sensorArray.innerHTML += `<input type="checkbox" id="${sensor.name}" value="${sensor.i}">`
+            sensorArray.innerHTML += `<label for="${sensor.name}"> ${sensor.name}</label><br>`
+            i++
+        })
+
+        document.getElementById("choose-sensors").hidden = false
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//choose device sensors to be used for measurements
+function choosenSensors() {
+    try {
+        
+        gdxDevice.sensors.forEach(sensor => {
+            if (document.getElementById(sensor.name).checked){
+                sensor.enabled = true
+                sensor.emit('state-changed', sensor)
+            } else {
+                sensor.enabled = false
+                sensor.emit('state-changed', sensor)
+            }
+        }) 
+
+        document.getElementById("choose-sensors").hidden = true
+        collectBtn.style.backgroundColor = '#a2d865'
+        collectBtn.textContent = `Start Collection`
+        collectBtn.hidden = false
 
     } catch (err) {
         console.log(err)
@@ -103,16 +150,17 @@ function enableAllSensors (device) {
 // add line function to add new dataset for each device connected
 function addLine (device_name, sensor_name) {
     try {
-        const colorName = colorNames[config.data.datasets.length % colorNames.length]
-        const newColor = window.chartColors[colorName]
+        colorName = colorNames[config.data.datasets.length % colorNames.length]
+        newColor = window.chartColors[colorName]
         
         // config of the new dataset
         const newDataset = {
-            label: `${device_name}:${sensor_name}`,
+            label: `${sensor_name}`,
             backgroundColor: newColor,
             borderColor: newColor,
             data: [],
-            fill: false
+            fill: false,
+            options: { title: { text: 'Chart.js Line Chart' + device_name }}
         }
         config.data.datasets.push(newDataset)
         window.myLine.update()
@@ -124,7 +172,6 @@ function addLine (device_name, sensor_name) {
     }
 }
 
-
 // add line function to add new dataset for each device connected
 async function createStartStopDevice(){
     try {
@@ -135,7 +182,6 @@ async function createStartStopDevice(){
         })
 
         let device = await godirect.createDevice(bleDevice,  {open: false, startMeasurements: false})
-        document.getElementById("start_stop_collection").hidden = false
 
         return device
 
@@ -149,16 +195,16 @@ async function createStartStopDevice(){
 const startStopCollection = async () => {  
     if (!collecting) {
         collecting = true
+        collectBtn.style.backgroundColor = '#d86965'
         collectBtn.textContent = `Stop Collection`
-        collectBtn.style.backgroundColor = 'rgb(165, 124, 118)'
         gdxDevice.start(delta*1000)
         count = 0.0
         // update the table with the new sensor values
         window.myLine.update()                  
     } else {
         collecting = false
+        collectBtn.style.backgroundColor = '#a2d865'
         collectBtn.textContent = `Start Collection`
-        collectBtn.style.backgroundColor = 'rgb(145, 226, 152)'
         gdxDevice.stop()
      }        
 }

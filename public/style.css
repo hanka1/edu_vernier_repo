@@ -1,0 +1,92 @@
+* {
+    font-family: 'Calibri';
+    color: rgb(14, 61, 88);
+}
+
+h2{
+    font-size: 28px;
+}
+
+.h2_color{
+    color: rgb(145, 72, 24);
+}
+
+body {
+    margin: 15px; 
+}
+
+
+pre {
+    background-color: rgb(200, 231, 240);
+    width: 75%;
+}
+
+
+button {
+    padding: 15px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    background-color: #7bb33b;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 4px 4px #999;
+    color: rgb(14, 61, 88);
+}
+  
+button:hover {background-color: rgb(135, 219, 137)}
+  
+  
+button:active {
+    background-color:#a2d865;
+    box-shadow: 1px 2px #666;
+    transform: translateY(4px);
+}
+
+.button_start{
+        background-color: #a2d865;
+        font-size: 24px;
+        width: 400px;
+        text-align-last: left;
+}
+
+.button_stop{
+    background-color: #d86965;
+    font-size: 24px;
+    width: 400px;
+    text-align-last: left;
+}
+
+.button_vernier{
+    background-color: rgb(230, 198, 176);
+    font-size: 28px;
+    width: 400px;
+    text-align-last: left;
+    padding: 15px 25px;
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 4px 4px #999;
+    color: rgb(145, 72, 24);
+}
+
+.button_eduform {
+    background-color: rgb(145, 226, 215);
+    font-size: 28px;
+    width: 400px;
+    text-align-last: left;
+    padding: 15px 25px;
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 4px 4px #999;
+    color: rgb(14, 61, 88);
+}
+
+

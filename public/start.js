@@ -1,4 +1,3 @@
-const collectBtn = document.querySelector('#start_stop_collection')
 let count = 0
 let gdxDevice
 let collecting = false
@@ -7,6 +6,8 @@ let delta = 1.0
 //to select device function, awaits connection to the device 
 const selectDevice = async () => {
     try {
+        sensorArray.innerHTML = []
+
         if (gdxDevice){
             gdxDevice.close()
         } else {
@@ -14,18 +15,21 @@ const selectDevice = async () => {
             gdxDevice = await createStartStopDevice()
 
             gdxDevice.on('device-closed', () => {
+                selectDeviceBtn.textContent = `Select Go Direct Device`
+                selectDeviceBtn.hidden = false
+                collectBtn.hidden = true
                 output.textContent += `\n\n Disconnected from `+ gdxDevice.name +`\n`
                 gdxDevice = undefined
-                selectDeviceBtn.textContent = `Select Go Direct Device`
             })
 
             gdxDevice.on('device-opened', () => {
+                selectDeviceBtn.hidden = true
                 //to enable all sensors for measurements 
-                enableAllSensors(gdxDevice) 
+                chooseSensors(gdxDevice) 
 
                 gdxDevice.sensors.forEach((enabledSensor) => {
                     //to add line to chart for each sensor
-                    const line = addLine(gdxDevice.name, enabledSensor.name)
+                    let line = addLine(gdxDevice.name, enabledSensor.name)
 
                     enabledSensor.on('value-changed', (sensor) => {
                         //to add data from sensor to line 
@@ -36,9 +40,12 @@ const selectDevice = async () => {
                         window.myLine.update()
                         count += delta;   
 
-                        //to collect 10 + 1 samples and disconnect
-                        if (sensor.values.length >= 11) {
+                        //to collect 10 samples and disconnect
+                        if (sensor.values.length >= 10) {
                             gdxDevice.close()
+                            sensorArray.innerHTML = []
+                            collectBtn.hidden = true
+                            selectDeviceBtn.hidden = false
                         }
                     })
                 })
@@ -48,6 +55,8 @@ const selectDevice = async () => {
 
     } catch (err) {
         console.error(err)
+        output.textContent += (err.toString())
+        output.textContent += ('Try to reload page and/or switch off / switch on device.')
     }
 }
 
