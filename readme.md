@@ -1,19 +1,17 @@
-## run example
+## TODO
+- app introduction
+- allow change config by player before each game
+
+## How to run html example pages
 - app.js runs server framework for Node.js express server
-- to install all needed packages in terminal run `npm install`
-- to run express terminal command  `npm start`
-- to choose which html run fill the file name in app.js 
-    ```javascript 
-    const html_page = "name_of_html_file.html"
-    ```
-- in browser run http://localhost:8000
+- to install all needed packages in terminal run `npm install` command
+- to run express terminal command  `npm start` command
+- open browser http://localhost:8000
   
-## /chart_Vernier
-public/chart_Vernier.html
-Vernier html example from <https://github.com/VernierST/godirect-examples>
+- there are orginals exmaples form Vernier and adjusted chart exmples and demo game form Edufor
 
-## /acceleration_sensors
-public/acceleration_sensors.html
-
-## /public/game_1.html
-game example to shoot with Vernier acceleration sensor
+## How to play game with Vernier accelerator
+- stick sensor to plastic plate with double stick tape
+- and switch it on 
+- open game in browser - see above
+- play

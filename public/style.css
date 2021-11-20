@@ -1,10 +1,15 @@
 * {
     font-family: 'Calibri';
+}
+
+h1, p {
     color: rgb(14, 61, 88);
 }
 
+
 h2{
     font-size: 28px;
+    color: rgb(14, 61, 88);
 }
 
 .h2_color{
@@ -19,12 +24,13 @@ body {
 pre {
     background-color: rgb(200, 231, 240);
     width: 75%;
+    margin: 15px; 
 }
 
 
 button {
     padding: 15px 25px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
     text-align: center;
     text-decoration: none;
@@ -46,10 +52,10 @@ button:active {
 }
 
 .button_start{
-        background-color: #a2d865;
-        font-size: 16px;
-        width: 400px;
-        text-align-last: left;
+    background-color: #a2d865;
+    font-size: 16px;
+    width: 400px;
+    text-align-last: left;
 }
 
 .button_stop{
@@ -93,3 +99,46 @@ canvas{
     -user-select: none;
 }
 
+.div_canvas_game{
+    position: relative;
+    left: 15px;
+    top: 15px;
+    background-color:solid black;
+}
+.canvas_game{
+    border: 1px;
+    background-color:solid black;
+}
+
+.game_score{
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-size: 16px;
+    width: 120px;
+    text-align-last: left;
+    color:rgb(145, 226, 215);
+}
+
+.game_score_info {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    font-size: 16px;
+    width: 180px;
+    text-align-last: left;
+    color:rgb(145, 226, 215);
+}
+
+.flex_center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    align-content: center;
+    text-align: center;
+    border-radius: 15px;
+    width: 250px;
+    height:220px;
+    background-color:rgb(200, 231, 240);
+}
