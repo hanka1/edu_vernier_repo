@@ -6,23 +6,14 @@
     <!--import chart.js and Go Direct library-->
     <script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     
-      <style>
-        canvas{
-            -moz-user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-        }
-
-
-      </style>
   </head>
 
   <body>
-        <h1>Vernier Go Direct<sup>&reg</sup> and Eduform <sup>&reg</sup> JavaScript Demo </h1>
+    <h1>Vernier Go Direct<sup>&reg</sup> and Eduform<sup>&reg</sup> JavaScript Demo </h1>
         <p>
-            This example shows how you can use the <a href="https://www.npmjs.com/package/@vernier/godirect">Vernier Go Direct Module</a> to connect to a <a href="https://www.vernier.com/products/sensors/go-direct-sensors/">Vernier Go Direct Sensor</a> and plot the collected data.
+            This example shows how you can use the <a href="https://www.npmjs.com/package/@vernier/godirect">Vernier Go Direct Module</a> to connect to a <a href="https://www.vernier.com/products/sensors/go-direct-sensors/">Vernier Go Direct Sensor</a> and plot the collected data for all device sensors.
         </p>
         <p id="connection_type">
             <input type="radio" id="ble" name="type" value="1" checked>
@@ -35,21 +26,13 @@
         <!--set up canvas for chart to be created-->
         <div style="width:75%;">
             <canvas id="canvas"></canvas>
-
+ 
         </div>
-
-        <!--run the startStopCollection function when the button is pressed-->
-        
-        <div id="sensor_array"></div>
-        <br>
-        <button  hidden=true class="button_start" id="choose-sensors" onclick="choosenSensors()">Choose sensors</button>
-        <button hidden=true  class="button_start" id="start_stop_collection" onclick="startStopCollection()" >Start Collection</button>
 
         <pre id="output"></pre>
         
         <script src= "utils.js"></script>
-        <script src= "start.js"></script>
-    
+        <script src= "acceleration_sensors.js"></script>
+        
     </body>
-
 </html>

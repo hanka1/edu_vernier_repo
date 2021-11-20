@@ -12,16 +12,16 @@ app.get("/", (req,res) => {
 })
 
 app.get("/game_1", (req,res) => {
-    res.sendFile(path.join(__dirname, './public/game_1.html' ))
+    res.sendFile(path.join(__dirname, './public/game_1/game_1.html' ))
 })
 
 app.get("/acceleration_sensors.html", (req,res) => {
-    res.sendFile(path.join(__dirname, './public/acceleration_sensors.html'  ))
+    res.sendFile(path.join(__dirname, './public/charts/acceleration_sensors.html'  ))
 })
 
 
 app.get("/start", (req,res) => {
-    res.sendFile(path.join(__dirname, './public/start.html' ))
+    res.sendFile(path.join(__dirname, './public/charts/start.html' ))
 })
 
 app.get("/example", (req,res) => {

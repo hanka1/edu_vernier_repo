@@ -1,0 +1,81 @@
+<!--
+   This example use the Go Direct JavaScript library to play and collect and manipulate data from a Vernier Go Direct Sensor. 
+-->
+<!doctype html>
+<html>
+
+<head>
+  <title>Game 1</title>
+  <meta name="description" content= "Use Vernier<sup>&reg</sup> device to shoot the balls">
+  <meta charset="utf-8"> 
+  
+  <!--import chart.js and Go Direct library-->
+  <script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
+  <script src= "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+  <script src= "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <link  href="../style.css" rel="stylesheet">
+
+</head>
+
+<body>
+    
+    <!--set up canvas for game to be created-->
+
+    <div>
+
+        <div class='fixed text-white text-sm ml-2 mt-1 select-none' >
+            <span>To destroy enemy: </span><span id = 'killEnemy'>?</span></br>
+            <span>To hit enemy: </span><span id = 'hitEnemy'>?</span></br>
+            <span>Score: </span><span id = 'scoreEl'>0</span>
+        </div>
+
+        <canvas 
+            id = canvas
+            ref="game" 
+            width="640" 
+            height="480" 
+            style="border: 1px solid black;">
+        </canvas>
+
+        <div class='flex items-center justify-left text-white' id='modelEl'>
+            <div class="bg-gray-900 mt-1 p-2 text-center">
+                <h1 class='text-4xl font-bold leading-none' id='scoreTotalEl'>0</h1>
+                <p class='text-sm text-gray-400 mb-4'>Points</p>
+                <p>
+                    <button class='bg-blue-500 text-white w-full p-2 py-2 rounded full'
+                    id="startGameBtn"> Start a new game </button>
+                </p>
+            </div>
+        </div>
+
+    </div>
+    
+    
+    <!--Vernier-->
+    <div>
+          <p id="connection_type">
+            <input type="radio" id="ble" name="type" value="1" checked>
+            <label id="ble_label" for="ble">Bluetooth</label>
+            <input type="radio" id="usb" name="type" value="0">
+            <label id="usb_label" for="usb">USB</label><br>
+        </p>
+        <!--button id="select_device" style="border: 1px solid black;"> Select Go Direct Device </button-->
+        <pre id="output"></pre>
+
+        <!--set up canvas for chart to be created-->
+        <div style="width:75%;">
+            <canvas id="canvas2"></canvas>
+        </div>
+    </div>
+
+    <script src= "game_entities.js"></script>
+    <script src= "game_utils.js"></script>
+    <script src= "game_1.js"></script>
+
+</body>
+
+<style>
+</style> 
+</html>
+

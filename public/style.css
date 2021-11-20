@@ -24,7 +24,7 @@ pre {
 
 button {
     padding: 15px 25px;
-    font-size: 24px;
+    font-size: 16px;
     cursor: pointer;
     text-align: center;
     text-decoration: none;
@@ -47,21 +47,21 @@ button:active {
 
 .button_start{
         background-color: #a2d865;
-        font-size: 24px;
+        font-size: 16px;
         width: 400px;
         text-align-last: left;
 }
 
 .button_stop{
     background-color: #d86965;
-    font-size: 24px;
+    font-size: 16px;
     width: 400px;
     text-align-last: left;
 }
 
 .button_vernier{
     background-color: rgb(230, 198, 176);
-    font-size: 28px;
+    font-size: 20px;
     width: 400px;
     text-align-last: left;
     padding: 15px 25px;
@@ -76,7 +76,7 @@ button:active {
 
 .button_eduform {
     background-color: rgb(145, 226, 215);
-    font-size: 28px;
+    font-size: 20px;
     width: 400px;
     text-align-last: left;
     padding: 15px 25px;
@@ -89,4 +89,7 @@ button:active {
     color: rgb(14, 61, 88);
 }
 
+canvas{
+    -user-select: none;
+}
 
