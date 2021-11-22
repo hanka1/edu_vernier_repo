@@ -343,14 +343,14 @@ function chooseControlSensors (device) {
         device.sensors.forEach(sensor => {
 
             if (sensor.name == 'X-axis acceleration' || sensor.name == 'Y-axis acceleration'  ||
-                sensor.name == 'Z-axis acceleration' || sensor.name == 'Angle'){
+                sensor.name == 'Z-axis acceleration' ){
                 sensor.enabled = true
                 output.textContent += sensor.name + ' enabled\n'
                 sensor.emit('state-changed', sensor)
                 sensor_found = true
             }
             if (sensor.name != 'X-axis acceleration' && sensor.name != 'Y-axis acceleration' && 
-                sensor.name != 'Z-axis acceleration' && sensor.name != 'Angle'){
+                sensor.name != 'Z-axis acceleration' ){
                 sensor.enabled = false
                 sensor.emit('state-changed', sensor)
             }
