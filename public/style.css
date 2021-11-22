@@ -153,14 +153,13 @@ canvas{
         appearance: none;
         background: #f2f2f2;
         border-radius: 3px;
-        text-align: right;
+        text-align: center;
 
 }
 
 .config_game {
     border-radius: 15px;
-    align-content: left;
-    text-align: left;
+    align-content: center;
     padding: 10px;
 }
 

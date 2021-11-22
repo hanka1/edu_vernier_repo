@@ -222,6 +222,10 @@ function animate () {
 function spawnEnemies () {
     try {
         ENEMY_SPAWN_SPEED = document.getElementById("enemy_spawn_speed").value
+        if (ENEMY_SPAWN_SPEED < 0 )
+            ENEMY_SPAWN_SPEED = 1
+        if (ENEMY_SPAWN_SPEED > 10 )
+            ENEMY_SPAWN_SPEED = 10
 
         spawn_enemy_interval = setInterval(() => {
             const radius = Math.random() * (30 - 4) + 4
