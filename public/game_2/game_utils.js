@@ -25,6 +25,7 @@ const c = canvas.getContext('2d')
 let gdxDevice
 let animation_id
 let score = 0
+let score_checker = 0 //to speed up enemy spawning
 let spawn_enemy_interval
 
 //to restart game properties
@@ -219,15 +220,24 @@ function animate () {
     }
 }
 
-function spawnEnemies () {
+function spawnEnemySpeeder (){
     try {
-        ENEMY_SPAWN_SPEED = document.getElementById("enemy_spawn_speed").value
-        if (ENEMY_SPAWN_SPEED < 0 )
-            ENEMY_SPAWN_SPEED = 1
-        if (ENEMY_SPAWN_SPEED > 10 )
-            ENEMY_SPAWN_SPEED = 10
+        ENEMY_SPAWN_SPEED -=1
+        clearInterval(spawn_enemy_interval)
+        setEnemySpawner()
+        score_checker = score    
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function setEnemySpawner () {
+    try {
 
         spawn_enemy_interval = setInterval(() => {
+            if ( score > 1000 + score_checker && ENEMY_SPAWN_SPEED > 1) {
+                spawnEnemySpeeder() 
+            }
             const radius = Math.random() * (30 - 4) + 4
             let x, y
 
@@ -257,6 +267,22 @@ function spawnEnemies () {
             enemies.push(new Enemy(x, y, radius, color, velocity))
 
         }, ENEMY_SPAWN_SPEED * 1000 )
+        
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function spawnEnemies () {
+    try {
+
+        ENEMY_SPAWN_SPEED = document.getElementById("enemy_spawn_speed").value
+        if (ENEMY_SPAWN_SPEED < 0 )
+            ENEMY_SPAWN_SPEED = 1
+        if (ENEMY_SPAWN_SPEED > 10 )
+            ENEMY_SPAWN_SPEED = 10
+
+        setEnemySpawner()
 
     } catch (err) {
         console.log(err)
