@@ -2,17 +2,11 @@
     font-family: 'Calibri';
 }
 
-h1, p {
+h1, h2, h3, p {
     color: rgb(14, 61, 88);
 }
 
-
-h2{
-    font-size: 28px;
-    color: rgb(14, 61, 88);
-}
-
-.h2_color{
+.h3_color{
     color: rgb(145, 72, 24);
 }
 
@@ -68,9 +62,9 @@ button:active {
 .button_vernier{
     background-color: rgb(230, 198, 176);
     font-size: 20px;
-    width: 400px;
+    width: 280px;
     text-align-last: left;
-    padding: 15px 25px;
+    padding: 10px;
     cursor: pointer;
     text-decoration: none;
     outline: none;
@@ -83,9 +77,9 @@ button:active {
 .button_eduform {
     background-color: rgb(145, 226, 215);
     font-size: 20px;
-    width: 400px;
+    width: 280px;
     text-align-last: left;
-    padding: 15px 25px;
+    padding: 10px;
     cursor: pointer;
     text-decoration: none;
     outline: none;
@@ -162,5 +156,32 @@ canvas{
     align-content: center;
     padding: 10px;
 }
+
+.router_image{
+    width: 220px;
+    height: 220px;
+    border-radius: 15px;
+    border: 2px solid rgb(14, 61, 88);
+    padding: 5px;
+
+}
+
+
+* {
+    box-sizing: border-box;
+  }
+  
+  .column {
+    float: left;
+    width: 300px;
+    padding: 5px;
+  }
+  
+  /* Clearfix (clear floats) */
+  .row::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 
 

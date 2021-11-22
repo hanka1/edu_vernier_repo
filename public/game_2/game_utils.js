@@ -336,21 +336,20 @@ async function createProjectile (sensor_values) {
 
 //to choose device sensor to control the game
 //if not found, default device sensor will be used
-//this game stage is set only for Angle
 function chooseControlSensors (device) {
     try {
         //to show all sensors     
         device.sensors.forEach(sensor => {
 
             if (sensor.name == 'X-axis acceleration' || sensor.name == 'Y-axis acceleration'  ||
-                sensor.name == 'Z-axis acceleration' || sensor.name == 'Angle'){
+                sensor.name == 'Z-axis acceleration' ){
                 sensor.enabled = true
                 output.textContent += sensor.name + ' enabled\n'
                 sensor.emit('state-changed', sensor)
                 sensor_found = true
             }
             if (sensor.name != 'X-axis acceleration' && sensor.name != 'Y-axis acceleration' && 
-                sensor.name != 'Z-axis acceleration' && sensor.name != 'Angle'){
+                sensor.name != 'Z-axis acceleration' ){
                 sensor.enabled = false
                 sensor.emit('state-changed', sensor)
             }
