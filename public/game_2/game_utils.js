@@ -273,23 +273,23 @@ async function createProjectile (sensor_values) {
         if (sensor_values.y >= 9.8)
             angle = Math.PI/2
         if (sensor_values.y <= - 9.8)
-            angle = Math.PI*3/2
+            angle = - Math.PI/2
 
         if (!angle){
 
-            if (Math.asin(sensor_values.y/9,8) > 0)
-                angle = Math.acos(sensor_values.x/9,8)
+            if (Math.asin(sensor_values.y/9.8) > 0)
+                angle = Math.acos(sensor_values.x/9.8)
     
-            if (Math.asin(sensor_values.y/9,8) < 0)
-                angle = Math.PI*2 - Math.acos(sensor_values.x/9,8)
+            if (Math.asin(sensor_values.y/9.8) < 0)
+                angle = Math.PI*2 - Math.acos(sensor_values.x/9.8)
+
         }
 
-        console.log('ANGLE From Vernier: ' + sensor_values.angle )
-        console.log('ANGLE calculated  : ' + angle*180/Math.PI )
+        angle = angle - Math.PI/2
 
         const velocity = {
-            x: Math.cos(-sensor_values.angle*Math.PI/180)* PROJECTILE_SPEED, 
-            y: Math.sin(-sensor_values.angle*Math.PI/180)* PROJECTILE_SPEED
+            x: Math.cos(angle)* PROJECTILE_SPEED, 
+            y: Math.sin(angle)* PROJECTILE_SPEED
         }
 
         projectiles.push(new Projectile(
@@ -299,9 +299,6 @@ async function createProjectile (sensor_values) {
             'white', 
             velocity 
         ))
-
-        // print the sensor name, value and units
-        //output.textContent += `\n Sensor: ${sensor.name} value: ${sensor.value} units: ${sensor.unit}`;	
      
     } catch (err) {
         console.error(err);
