@@ -18,13 +18,14 @@ divCanvasGame.style.maxWidth = CANVAS_WIDTH + 'px'
 divCanvasGame.style.backgroundColor = "black"
 
 canvas.height = CANVAS_HEIGHT
-canvas.width= CANVAS_WIDTH
+canvas.width = CANVAS_WIDTH
 
 const c = canvas.getContext('2d')
 
 let gdxDevice
 let animation_id
 let score = 0
+let spawn_enemy_interval
 
 //to restart game properties
 function init () {
@@ -181,6 +182,7 @@ function animateEnemyInteractions (enemy, index_enemy) {
                     modelEl.hidden = false
                     scoreTotalEl.innerHTML = score
                     gdxDevice.close()
+                    clearInterval(spawn_enemy_interval)
                 }, 2000)
 
                 return false
@@ -219,7 +221,9 @@ function animate () {
 
 function spawnEnemies () {
     try {
-        setInterval(() => {
+        ENEMY_SPAWN_SPEED = document.getElementById("enemy_spawn_speed").value
+
+        spawn_enemy_interval = setInterval(() => {
             const radius = Math.random() * (30 - 4) + 4
             let x, y
 
@@ -256,15 +260,36 @@ function spawnEnemies () {
 }
 
 //For other sensor than "Angle" measurement sensor needs to be redone
-async function createProjectile (sensor) {  			
+async function createProjectile (sensor_values) {  			
     try {
-
         //to convert degrees to radians 
-        const angle = - sensor.value * Math.PI / 180 
+        const angle_ANGLE = sensor_values.angle
+        let angle = false
+        
+        if (sensor_values.x >= 9.8)
+            angle = 0
+        if (sensor_values.x <= - 9.8)
+            angle = Math.PI
+        if (sensor_values.y >= 9.8)
+            angle = Math.PI/2
+        if (sensor_values.y <= - 9.8)
+            angle = Math.PI*3/2
+
+        if (!angle){
+
+            if (Math.asin(sensor_values.y/9,8) > 0)
+                angle = Math.acos(sensor_values.x/9,8)
+    
+            if (Math.asin(sensor_values.y/9,8) < 0)
+                angle = Math.PI*2 - Math.acos(sensor_values.x/9,8)
+        }
+
+        console.log('ANGLE From Vernier: ' + sensor_values.angle )
+        console.log('ANGLE calculated  : ' + angle*180/Math.PI )
 
         const velocity = {
-            x: Math.cos(angle)* PROJECTILE_SPEED, 
-            y: Math.sin(angle)* PROJECTILE_SPEED
+            x: Math.cos(-sensor_values.angle*Math.PI/180)* PROJECTILE_SPEED, 
+            y: Math.sin(-sensor_values.angle*Math.PI/180)* PROJECTILE_SPEED
         }
 
         projectiles.push(new Projectile(
@@ -276,7 +301,7 @@ async function createProjectile (sensor) {
         ))
 
         // print the sensor name, value and units
-        output.textContent += `\n Sensor: ${sensor.name} value: ${sensor.value} units: ${sensor.unit}`;	
+        //output.textContent += `\n Sensor: ${sensor.name} value: ${sensor.value} units: ${sensor.unit}`;	
      
     } catch (err) {
         console.error(err);
@@ -286,31 +311,27 @@ async function createProjectile (sensor) {
 //to choose device sensor to control the game
 //if not found, default device sensor will be used
 //this game stage is set only for Angle
-function chooseControlSensors (device, sensor_name) {
+function chooseControlSensors (device) {
     try {
-        let enabled_sensor = false
         //to show all sensors     
         device.sensors.forEach(sensor => {
-            if (sensor.name == sensor_name){
+
+            if (sensor.name == 'X-axis acceleration' || sensor.name == 'Y-axis acceleration'  ||
+                sensor.name == 'Z-axis acceleration' || sensor.name == 'Angle'){
                 sensor.enabled = true
+                output.textContent += sensor.name + ' enabled\n'
                 sensor.emit('state-changed', sensor)
                 sensor_found = true
-                enabled_sensor = sensor
-            } else {
+            }
+            if (sensor.name != 'X-axis acceleration' && sensor.name != 'Y-axis acceleration' && 
+                sensor.name != 'Z-axis acceleration' && sensor.name != 'Angle'){
                 sensor.enabled = false
                 sensor.emit('state-changed', sensor)
             }
         }) 
 
-        if (!enabled_sensor){
-            device.sensors[0].enabled = true
-            device.sensors[0].emit('state-changed', device.sensors[0])
-            sensor_name = device.sensors[0].name
-            enabled_sensor = device.sensors[0]
-        }
 
-        output.textContent += `\n Game will be controled by `+ sensor_name + `\n`
-        return [enabled_sensor]
+        return device
 
     } catch (err) {
         console.log(err)

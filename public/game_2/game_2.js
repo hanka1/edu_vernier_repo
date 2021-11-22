@@ -4,6 +4,7 @@ createSelectButton ()
 const playGameWithDevice = async () => { 
     const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"
       try {
+
         //to set control sensor from device
         gdxDevice = await godirect.selectDevice(bluetooth)
         output.textContent += `\n Connected to `+ gdxDevice.name + `\n`
@@ -16,18 +17,33 @@ const playGameWithDevice = async () => {
             }, 2000)
         })
 
-        //For other than "Angle" sensor fnc createProjectile(sensor) needs to be redone
-        const enabledSensors = chooseControlSensors(gdxDevice, 'Angle') //'Angle' 
+        device = chooseControlSensors(gdxDevice) 
 
         //to start and animate game
         init() 
         animate() 
         spawnEnemies()
+        let sensor_values = {x: false, y: false, z: false, angle: false}
 
-        enabledSensors.forEach(sensor => {
+        gdxDevice.sensors.forEach( sensor => {
             sensor.on('value-changed', (sensor) => {
-                //to shoot on each time sensor value changed
-                createProjectile(sensor)			
+                //to shoot on each time sensor values changed
+                if (sensor.name == 'X-axis acceleration'){
+                    sensor_values.x = sensor.value
+                }
+                if (sensor.name == 'Y-axis acceleration'){
+                    sensor_values.y = sensor.value
+                }
+                if (sensor.name == 'Z-axis acceleration'){
+                    sensor_values.z = sensor.value
+                }
+                if (sensor.name == 'Angle'){
+                    sensor_values.angle = sensor.value
+                    if (sensor_values.x && sensor_values.y && sensor_values.z){
+                        createProjectile(sensor_values)
+                        sensor_values.x = false
+                    }
+                }		
             })
         })
     
