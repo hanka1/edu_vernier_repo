@@ -37,9 +37,6 @@ const playGameWithDevice = async () => {
                 }
                 if (sensor.name == 'Z-axis acceleration'){
                     sensor_values.z = sensor.value
-                }
-                if (sensor.name == 'Angle'){
-                    sensor_values.angle = sensor.value
                     if (sensor_values.x && sensor_values.y && sensor_values.z){
                         createProjectile(sensor_values)
                         sensor_values.x = false

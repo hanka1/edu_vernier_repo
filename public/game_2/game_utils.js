@@ -293,7 +293,6 @@ function spawnEnemies () {
 async function createProjectile (sensor_values) {  			
     try {
         //to convert degrees to radians 
-        const angle_ANGLE = sensor_values.angle
         let angle = false
         
         if (sensor_values.x >= 9.8)
