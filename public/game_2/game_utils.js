@@ -336,7 +336,6 @@ async function createProjectile (sensor_values) {
 
 //to choose device sensor to control the game
 //if not found, default device sensor will be used
-//this game stage is set only for Angle
 function chooseControlSensors (device) {
     try {
         //to show all sensors     
