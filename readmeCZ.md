@@ -18,7 +18,7 @@ Pro většinu příkladů jsou zde dvě možnosti:
 
 Stránka *router.hmtl* odkazuje na kontrétní příklady:
 
-![](../public/../test_vernier_2/public/images/docs/router.PNG)
+![](public/images/docs/router.PNG)
 
 ## Příklady
 
@@ -41,7 +41,7 @@ Stránka *router.hmtl* odkazuje na kontrétní příklady:
 - hrát a otáčením talíře obládat hru
 
 
-![](../public/../test_vernier_2/public/images/docs/sensor.png)
+![](/public/images/docs/sensor.png)
   
 ### Vernier® original příklady
 - Jsou zde zahrnuté původní příklady od společnosti Vernier. Pro více příkladu se můžete podívat na https://github.com/VernierST/godirect-examples
