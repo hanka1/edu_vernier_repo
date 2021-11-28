@@ -19,6 +19,10 @@ app.get("/game_2", (req,res) => {
     res.sendFile(path.join(__dirname, './public/game_2/game_2.html' ))
 })
 
+app.get("/game_3", (req,res) => {
+    res.sendFile(path.join(__dirname, './public/game_3/game_3.html' ))
+})
+
 app.get("/acceleration_sensors.html", (req,res) => {
     res.sendFile(path.join(__dirname, './public/charts/acceleration_sensors.html'  ))
 })
