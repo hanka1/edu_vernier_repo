@@ -5,7 +5,7 @@ const app = express()
 const PORT = 8000
 const __dirname = path.resolve()
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public'))
 
 app.get("/", (req,res) => {
     res.sendFile(path.join(__dirname, './public/router.html' ))

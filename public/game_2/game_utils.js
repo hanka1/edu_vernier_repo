@@ -1,11 +1,11 @@
 const usbBtn = document.querySelector('#usb')
 const usbLabel = document.querySelector('#usb_label')
 const bleBtn = document.querySelector('#ble')
-const bleLabel = document.querySelector('#ble_label').id
+const bleLabel = document.querySelector('#ble_label')
 const selectDeviceBtn = document.querySelector('#select_device')
 const output = document.querySelector('#output')
 const sensorArray = document.querySelector('#sensor_array')
-const collectBtn = document.querySelector('#start_stop_collection')
+
 
 const canvas = document.querySelector('canvas')
 const scoreEl = document.querySelector('#scoreEl')
@@ -335,7 +335,6 @@ async function createProjectile (sensor_values) {
 }
 
 //to choose device sensor to control the game
-//if not found, default device sensor will be used
 function chooseControlSensors (device) {
     try {
         //to show all sensors     
@@ -346,7 +345,6 @@ function chooseControlSensors (device) {
                 sensor.enabled = true
                 output.textContent += sensor.name + ' enabled\n'
                 sensor.emit('state-changed', sensor)
-                sensor_found = true
             }
             if (sensor.name != 'X-axis acceleration' && sensor.name != 'Y-axis acceleration' && 
                 sensor.name != 'Z-axis acceleration' ){
@@ -354,7 +352,6 @@ function chooseControlSensors (device) {
                 sensor.emit('state-changed', sensor)
             }
         }) 
-
 
         return device
 

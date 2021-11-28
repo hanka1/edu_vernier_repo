@@ -1,5 +1,5 @@
 //to start game there is needed to select control device
-createSelectButton ()
+createSelectButton()
 
 const playGameWithDevice = async () => { 
     const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"
@@ -18,7 +18,7 @@ const playGameWithDevice = async () => {
             }, 2000)
         })
 
-        device = chooseControlSensors(gdxDevice) 
+        chooseControlSensors(gdxDevice) 
 
         //to start and animate game
         init() 
