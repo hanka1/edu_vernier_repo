@@ -36,7 +36,7 @@ For most cases there are two possibilities:
 - For both cases *Google Chrome browser* have to be used. Vernier devices mostly are not compatible with other browsers.
 
 Start with *router.hmtl* page which refers to other demo pages
-![](../public/../test_vernier_2/public/images/docs/router.PNG)
+![](/public/images/docs/router.PNG)
 
 ## Examples
 
@@ -59,7 +59,7 @@ Start with *router.hmtl* page which refers to other demo pages
 - in a pop up window choose the device in a pop up window and confirm by *Pair*
 - play and control the game by plate rotation
 
-![](../public/../test_vernier_2/public/images/docs/sensor.png)
+![](./public/images/docs/sensor.png)
   
 ### Vernier® original examples
 - There are included originals examples from Vernier. For more examples see https://github.com/VernierST/godirect-examples
