@@ -5,7 +5,7 @@
     - [Edufor® demo game - *Game 2*](#edufor-demo-game---game-2)
     - [How to play *Game 2* with Vernier device, i.e. accelerator](#how-to-play-game-2-with-vernier-device-ie-accelerator)
     - [Vernier® original examples](#vernier-original-examples)
-- [Edufor examples how to use Vernier sensors](#edufor-examples-how-to-use-vernier-sensors)
+- [Edufor's examples how to use Vernier sensors](#edufors-examples-how-to-use-vernier-sensors)
   - [How to start with examples:](#how-to-start-with-examples)
   - [Examples](#examples)
     - [Edufor® demo charts](#edufor-demo-charts)
@@ -18,11 +18,11 @@
     - [Choose all sensors](#choose-all-sensors)
     - [Choose just some sensors](#choose-just-some-sensors)
 
-# Edufor examples how to use Vernier sensors
+# Edufor's examples how to use Vernier sensors
 
 ## How to start with examples:
 
-There are two possibilities:
+For most cases there are two possibilities:
 
 1. Simply open browser and enter the address - the route to "router.html" file, i.e. C:/Vernier/test_vernier_2/public/router.html
 
@@ -32,8 +32,11 @@ There are two possibilities:
    - to run express terminal run  `npm start`  
    - open browser at address http://localhost:8000 
 
+- Some exmaples can be run only with express server
 - For both cases *Google Chrome browser* have to be used. Vernier devices mostly are not compatible with other browsers.
-- Start with *router.hmtl* page which leads to other demo pages
+
+Start with *router.hmtl* page which refers to other demo pages
+![](../public/../test_vernier_2/public/images/docs/router.PNG)
 
 ## Examples
 
@@ -53,12 +56,14 @@ There are two possibilities:
 - switch on the device
 - open the page with game (Game 2), for details see above
 - click to *Start a new game*
-- choose the device in a pop up window and confirm by *Pair*
+- in a pop up window choose the device in a pop up window and confirm by *Pair*
 - play and control the game by plate rotation
+
+![](../public/../test_vernier_2/public/images/docs/sensor.png)
   
 ### Vernier® original examples
 - There are included originals examples from Vernier. For more examples see https://github.com/VernierST/godirect-examples
-#
+
 
 
 # Javascript examples for your own application
@@ -180,11 +185,10 @@ function enableAllSensors (device) {
 example.js file
 ``` javascript
 //to choose device sensors - call this function from `selectDevice()`
-//if not found, default device sensor will be used
 //this example choose X,Y and Z-axis acceleration sensors
 function chooseControlSensors (device) {
     try {
-        //to show all sensors     
+        //for all device all sensors     
         device.sensors.forEach(sensor => {
 
             if (sensor.name == 'X-axis acceleration' || sensor.name == 'Y-axis acceleration'  ||
