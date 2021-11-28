@@ -1,16 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <title>Game 2</title>
+    <meta name="description" content= "Use Vernier<sup>&reg</sup> device to move rocket.">
+    <meta charset="utf-8"> 
+        
+    <!--import Go Direct library-->
+    <script src="https://unpkg.com/@vernier/godirect/dist/godirect.min.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+    <link rel="icon" href="../images/favicon.ico">
+      
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="style.css" />
-    <title>Document</title>
   </head>
   <body>
-    <div class="scene"></div>
-    <script src="three.min.js"></script>
-    <script src="GLTFLoader.js"></script>
-    <script src="game_3.js"></script>
+
+    <div class="div_scene_game" id="div_scene_game" >
+        <div class="scene" id=scene ref=game></div>
+
+        <div class='game_score' >
+            <span>Score: </span><span style="font-size: 150%" id = 'scoreEl'>0</span>
+        </div>
+
+        <div class='game_score_info' >
+            <span>Destroyed enemy: </span><span id = 'killEnemy'>?</span></br>
+            <span>Hit enemy: </span><span id = 'hitEnemy'>?</span></br>
+        </div>
+    
+        <div class='flex_center' id='modelEl'>
+                <p></br></p>
+                <h2 id='scoreTotalEl'>0</h2>
+                <p>POINTS</p>
+                <p>
+                    <button id="startGameBtn"> Start a new game </button>
+                    <p id="connection_type"><br>
+                        <input type="radio" id="ble" name="type" value="1" checked>
+                        <label id="ble_label" for="ble"> Bluetooth </label>
+                        <input type="radio" id="usb" name="type" value="0">
+                        <label id="usb_label" for="usb"> USB </label><br>
+                    </p>
+                    <p id="config_game" class="config_game" >
+                        <label for="enemy_spawn_speed">Config param not ready</label>
+                        <input class="config_game_input" id="enemy_spawn_speed" type="number" min="1" max="10" value="0" required>
+                        <span>s. </span><br>
+                    </p>
+        </div>
+    </div>
+
+    <!--ouyput from Vernier device-->
+    <div>
+    
+        <pre id="output"></pre>
+
+    </div>
+    <script type="module" src="./device_utils.js"></script>
+    <script type="module" src="./game_utils.js"></script>
+    <script type="module" src="./game_3.js"></script>
   </body>
 </html>

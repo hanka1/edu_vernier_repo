@@ -1,81 +1,82 @@
-//Variables for setup
+import * as THREE from "https://cdn.skypack.dev/three@0.135.0"
+import { GLTFLoader } from "https://cdn.skypack.dev/three@0.135.0/examples/jsm/loaders/GLTFLoader.js"
 
-let container
-let camera
-let renderer
-let scene
-let rocket
-let x = 0 //out of bordes -16, 16
-let y = 0 //out of bordes -5, 16
-let z = 15 //out of bordes -50, 16
+import * as game_utils from "./game_utils.js"
+import * as device_utils from "./device_utils.js"
 
-function init() {
-    container = document.querySelector(".scene")
+let gdxDevice
 
-    //Create scene
-    scene = new THREE.Scene()
+device_utils.createSelectButton()
 
-    const fov = 35
-    const aspect = container.clientWidth / container.clientHeight
-    const near = 0.1
-    const far = 1000
+const playGameWithDevice = async () => { 
+    const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"
+      try {
 
-    //Camera setup
-    camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
-    camera.position.set(0, 5, 30)
+        //to set control sensor from device
+        modelEl.hidden = true
+        gdxDevice = await godirect.selectDevice(bluetooth)
+        console.log(`\nConnected to `+ gdxDevice.name + `\n`)
+        
 
-    const ambient = new THREE.AmbientLight(0x404040, 2)
-    scene.add(ambient)
+        gdxDevice.on('device-closed', () => {
+            output.textContent += `\n\nDevice disconnected. GAME OVER.\n`
+            setTimeout(() => { 
+                modelEl.hidden = false
+            }, 2000)
+        })
 
-    const light = new THREE.DirectionalLight(0xffffff, 2)
-    light.position.set(50, 50, 100)
-    scene.add(light)
-    //Renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setSize(1/20, 1/20)
-    renderer.setPixelRatio(window.devicePixelRatio)
+        device_utils.chooseControlSensors(gdxDevice) 
 
-    container.appendChild(renderer.domElement)
+        //to start and animate game
+        //init() 
+        //animate() 
+        //spawnEnemies()
 
-    console.log(container.clientWidth)
-    console.log(container.clientHeight)
+        game_utils.init()
+        game_utils.getRocket()
 
-    //Load Model
-    let loader = new THREE.GLTFLoader();
-    loader.load("./rocket/scene.gltf", (gltf) => {
-        //
-        rocket = gltf.scene.children[0]
-        rocket.scale.set(0.05,0.05,0.05)
-        scene.add(gltf.scene)
-        animate()
-    })
+        let sensor_values = {x: false, y: false, z: false, angle: false}
+
+        let i = 0
+        gdxDevice.sensors.forEach( sensor => {
+            sensor.on('value-changed', (sensor) => {
+                //to shoot on each time sensor values changed
+                if (sensor.name == 'X-axis acceleration'){
+                    sensor_values.x = sensor.value
+                }
+                if (sensor.name == 'Y-axis acceleration'){
+                    sensor_values.y = sensor.value
+                }
+                if (sensor.name == 'Z-axis acceleration'){
+                    sensor_values.z = sensor.value
+                    if (sensor_values.x && sensor_values.y && sensor_values.z){
+                        //createProjectile(sensor_values)
+                        console.log(sensor_values)
+                        sensor_values.x = false
+                    }
+                    i++
+                }	
+                if (i = 4)
+                gdxDevice.close()
+
+            })
+        })
+    
+    } catch (err) {
+        console.error(err)
+    }
 }
 
-function animate() {
-    requestAnimationFrame(animate)
-    rocket.rotation.y += 0.005
-    rocket.rotation.z += 0.005
-    rocket.rotation.z += 0.005
-    renderer.render(scene, camera)
-    rocket.position.set(x, y, z)
-    //x += 0.05
-    //y += 0.05
-    //z += 0.1
-    camera.aspect = container.clientWidth / container.clientHeight
-    camera.updateProjectionMatrix()
+startGameBtn.addEventListener('click', playGameWithDevice )
 
-    renderer.setSize(container.clientWidth, container.clientHeight)
-}
 
-init()
 
 function onWindowResize() {
-  camera.aspect = container.clientWidth / container.clientHeight
-  camera.updateProjectionMatrix()
+    game_utils.camera.aspect = game_utils.container.clientWidth / game_utils.container.clientHeight
+    game_utils.camera.updateProjectionMatrix()
 
-  renderer.setSize(container.clientWidth, container.clientHeight)
-  //console.log(container.clientWidth)
-  //console.log(container.clientHeight)
+    renderer.setSize(game_utils.container.clientWidth, game_utils.container.clientHeight)
+
 }
 
 window.addEventListener("resize", onWindowResize)
