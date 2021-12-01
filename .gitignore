@@ -1,5 +1,5 @@
 **/node_modules/**
 **/package-lock.json
-**/example.**
+**/example*.**
 **/game_1/**
 **/game_4/**

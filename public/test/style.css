@@ -1,0 +1,21 @@
+body {
+    text-align: center;
+    font-family: sans-serif;
+}
+
+canvas {
+    background-color: black;
+    border: 10px solid white;
+}
+
+canvas:focus {
+    border: 10px solid grey;
+   }
+
+.newton_law {
+    color: rgb(14, 61, 88);
+    text-align: left;
+    width: 400px;
+    margin: 15px; 
+    font-family: 'Calibri';
+}
