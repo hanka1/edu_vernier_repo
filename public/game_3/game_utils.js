@@ -17,7 +17,6 @@ const x = canvas.width / 2
 const y = canvas.height / 2
 let dock = new Dock (canvas.width/2 + 150, canvas.height/2 - 150, 100, 40, 'rgb(200, 231, 240)' )
 let rocket = new Rocket (50, canvas.height - 50, 10, 'red', {x: 0, y: 0})
-let rocket2 = new Rocket (50, canvas.height - 50, 10, 'red', {x: 0, y: 0})
 let dock_doors = new Dock_door (canvas.width/2 + 150, canvas.height/2 - 150, 40, 'black' )
 
 let particles = []
@@ -31,7 +30,6 @@ let i = 0
 function init () {
     dock = new Dock (canvas.width - 150, canvas.height - 350, 100, 40, 'rgb(200, 231, 240)' )
     rocket = new Rocket (50, canvas.height - 50, 10, 'red', {x: 0, y: 0})
-    rocket2 = new Rocket (100, canvas.height - 100, 10, 'black', {x: 0, y: 0})
     dock_doors = new Dock_door (canvas.width - 150, canvas.height - 350, 40, 'black' )
 
     score = 0
@@ -47,9 +45,7 @@ function animate () {
         c.fillRect(0 , 0, canvas.width, canvas.height) //to clean canvas and delete old game
    
         dock.draw() 
-        rocket2.draw() 
         dock_doors.draw() 
-        rocket2.update() 
         rocket.update() 
 
         if ( i > 63 ) {

@@ -52,6 +52,7 @@ class Dock_door {
         this.color = color
     }
     draw () {
+        c.beginPath()
         c.rect(this.x - 5, this.y - 5, 15, this.height + 10)
         c.fillStyle = this.color 
         c.fill()
