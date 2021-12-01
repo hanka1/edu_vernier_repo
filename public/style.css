@@ -169,19 +169,24 @@ canvas{
 
 * {
     box-sizing: border-box;
-  }
+}
   
-  .column {
+.column {
     float: left;
     width: 300px;
     padding: 5px;
-  }
+}
   
-  /* Clearfix (clear floats) */
-  .row::after {
+/* Clearfix (clear floats) */
+.row::after {
     content: "";
     clear: both;
     display: table;
-  }
+}
+
+.newton_law {
+    color: rgb(14, 61, 88);
+    padding: 15px;
+}
 
 

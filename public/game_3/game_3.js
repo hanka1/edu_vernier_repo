@@ -19,9 +19,9 @@ const playGameWithDevice = async () => {
 
         chooseControlSensors(gdxDevice) //to choose X,Y,Z-axis acceleration
 
-        //to start and animate game
+        //to init a new game
         init() 
-        animate() 
+
         let sensor_values = {x: false, y: false, z: false, angle: false}
 
         gdxDevice.sensors.forEach( sensor => {
@@ -37,7 +37,7 @@ const playGameWithDevice = async () => {
                 if (sensor.name == 'Z-axis acceleration'){
                     sensor_values.z = sensor.value
                     if (sensor_values.x && sensor_values.y && sensor_values.z){
-                        moveRocket(sensor_values)
+                        updateShip(sensor_values)
                         sensor_values.x = false  
                     }
                 }     

@@ -1,5 +1,6 @@
 **/node_modules/**
 **/package-lock.json
 **/example*.**
+**/delete*.**
 **/game_1/**
 **/game_4/**

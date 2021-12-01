@@ -14,8 +14,4 @@ canvas:focus {
 
 .newton_law {
     color: rgb(14, 61, 88);
-    text-align: left;
-    width: 400px;
-    margin: 15px; 
-    font-family: 'Calibri';
 }
