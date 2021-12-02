@@ -68,11 +68,13 @@ class Mass {
         //return back if hit to the wall
         if (this.x + this.radius > ctx.canvas.width || this.x - this.radius < 0 ) {
             this.x_speed = - this.x_speed 
+            mySound.play()
         }
 
         //to hit top and bottom
         if (this.y + this.radius > ctx.canvas.height || this.y - this.radius < 0 ) {
             this.y_speed = -this.y_speed
+            mySound.play()
         }
 
         if ( 
@@ -86,23 +88,33 @@ class Mass {
             this.x_speed = 0
             this.y_speed = 0
             this.in_dock = true
+            mySound.play()
             
         } 
 
         //todo hit the dock top
         if (dock.y - this.radius < this.y && dock.y > this.y &&
-            dock.x < this.x && dock.x + dock.width > this.x )
-            this.y_speed = -this.y_speed
+            dock.x < this.x && dock.x + dock.width > this.x ){
+                mySound.play()
+                this.y_speed = -this.y_speed
+            }
+            
 
         //todo hit the dock bottom
         if (dock.y + dock.height + this.radius > this.y && dock.y + dock.height < this.y &&
-            dock.x < this.x && dock.x + dock.width > this.x )
-            this.y_speed = -this.y_speed
+            dock.x < this.x && dock.x + dock.width > this.x ){
+                mySound.play()
+                this.y_speed = -this.y_speed
+            }
+            
 
         //todo hit the dock right side
         if (dock.x + dock.width + this.radius > this.x && dock.x + dock.width - this.radius < this.x &&
-            dock.y - this.radius < this.y && dock.y + dock.height + this.radius > this.y )
-            this.x_speed = -this.x_speed
+            dock.y - this.radius < this.y && dock.y + dock.height + this.radius > this.y ){
+                mySound.play()
+                this.x_speed = -this.x_speed
+            }
+            
 
         //todo edge and corner cases
         //this.force = this.mass * Math.sqrt(this.x * this.x + this.y * this.y)
@@ -533,4 +545,19 @@ function updateShipThrusters (sensor_values) {
     } catch (err) {
         console.log(err)
     }
+}
+
+function sound(src) {
+    this.sound = document.createElement("audio")
+    this.sound.src = src
+    this.sound.setAttribute("preload", "auto")
+    this.sound.setAttribute("controls", "none")
+    this.sound.style.display = "none"
+    document.body.appendChild(this.sound)
+    this.play = function(){
+        this.sound.play()
+    }
+    this.stop = function(){
+        this.sound.pause()
+    }    
 }

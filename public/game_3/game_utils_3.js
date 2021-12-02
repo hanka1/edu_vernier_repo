@@ -22,6 +22,7 @@ let asteroids = []
 
 let ship = new Ship(canvas.width / 2, canvas.height / 2, 0.1)
 let guide = false
+let mySound = new sound("../sounds/crash.mp3");
 
 //to restart game properties
 function init () {
