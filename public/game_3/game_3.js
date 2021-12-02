@@ -1,5 +1,10 @@
 //to start game there is needed to select control device
-createSelectButton()
+//createSelectButton() //for production uncomment
+
+//for test and dev else delte or comment
+modelEl.hidden = true 
+init() 
+animate()
 
 const playGameWithDevice = async () => { 
     const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"

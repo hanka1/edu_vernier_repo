@@ -1,4 +1,5 @@
 
+
 class Dock {
     constructor (x, y, width, height, color) {
         this.x = x
@@ -10,7 +11,7 @@ class Dock {
     draw (c) {
         c.save()
         c.beginPath()
-        c.roundRect(this.x, this.y, this.width, this.height, [10])
+        c.rect(this.x, this.y, this.width, this.height)
         //c.rect(this.x, this.y, this.width, this.height)
         c.fillStyle = this.color
         c.fill()
@@ -39,6 +40,9 @@ class Dock_door {
     }
 }
 
+let dock = new Dock (canvas.width - 150, canvas.height - 350, 100, 70, 'rgb(200, 231, 240)' )
+let dock_doors = new Dock_door (canvas.width - 150, canvas.height - 350, 70, 'black' )
+
 class Mass {
     constructor (x, y, mass, radius, angle, x_speed, y_speed, rotation_speed) {
         this.x = x
@@ -49,40 +53,73 @@ class Mass {
         this.x_speed = x_speed || 0
         this.y_speed = y_speed || 0
         this.rotation_speed = rotation_speed || 0
+        //todo force calculation
+        this.force = this.mass * Math.sqrt(this.x_speed * this.x_speed + this.y_speed + this.y_speed)
+        this.in_dock = false
     }
 
-    //to implement Newton’s first law:
-    update (elapsed, ctx) {
-        this.x += this.x_speed * elapsed
-        this.y += this.y_speed * elapsed
-        this.angle += this.rotation_speed * elapsed
+    update (ctx) {
+
+        this.x += this.x_speed 
+        this.y += this.y_speed 
+        this.angle += this.rotation_speed 
         this.angle %= (2 * Math.PI)
 
-        if(this.x - this.radius > ctx.canvas.width) {
-            this.x = -this.radius
+        //return back if hit to the wall
+        if (this.x + this.radius > ctx.canvas.width || this.x - this.radius < 0 ) {
+            this.x_speed = - this.x_speed 
         }
-        if(this.x + this.radius < 0) {
-            this.x = ctx.canvas.width + this.radius
+
+        //to hit top and bottom
+        if (this.y + this.radius > ctx.canvas.height || this.y - this.radius < 0 ) {
+            this.y_speed = -this.y_speed
         }
-        if(this.y - this.radius > ctx.canvas.height) {
-            this.y = -this.radius
-        }
-        if(this.y + this.radius < 0) {
-            this.y = ctx.canvas.height + this.radius
-        }
+
+        if ( 
+            dock.y + this.radius < this.y &&
+            dock.y + dock.height - this.radius > this.y &&
+            dock.x < this.x &&
+            dock.x + dock.width/2 > this.x
+        ){
+            this.x = dock.x + dock.width - this.radius
+            this.y = dock.y + dock.height - this.radius
+            this.x_speed = 0
+            this.y_speed = 0
+            this.in_dock = true
+            
+        } 
+
+        //todo hit the dock top
+        if (dock.y - this.radius < this.y && dock.y > this.y &&
+            dock.x < this.x && dock.x + dock.width > this.x )
+            this.y_speed = -this.y_speed
+
+        //todo hit the dock bottom
+        if (dock.y + dock.height + this.radius > this.y && dock.y + dock.height < this.y &&
+            dock.x < this.x && dock.x + dock.width > this.x )
+            this.y_speed = -this.y_speed
+
+        //todo hit the dock right side
+        if (dock.x + dock.width + this.radius > this.x && dock.x + dock.width - this.radius < this.x &&
+            dock.y - this.radius < this.y && dock.y + dock.height + this.radius > this.y )
+            this.x_speed = -this.x_speed
+
+        //todo edge and corner cases
+        //this.force = this.mass * Math.sqrt(this.x * this.x + this.y * this.y)
+    
     }
 
     //to implement Newton’s second law:
     //to apply the force to the mass, causing acceleration, 
     //that is inversely proportional to the mass
-    push (angle, force, elapsed) {
-        this.x_speed += elapsed * (Math.cos(angle) * force) / this.mass
-        this.y_speed += elapsed * (Math.sin(angle) * force) / this.mass
+    push (angle, force) {
+        this.x_speed += (Math.cos(angle) * force) / this.mass
+        this.y_speed += (Math.sin(angle) * force) / this.mass
     }
     //positive forces rotate the mass clockwise,
     //negative forces rotate the mass counterclockwise
-    twist (force, elapsed) {
-        this.rotation_speed += elapsed * force / this.mass;
+    twist (force) {
+        this.rotation_speed += force / this.mass;
     }
 
     //to calculate the speed and angle of movement of a Mass
@@ -105,6 +142,10 @@ class Mass {
         c.restore()
     }
 
+    massCollisionDetected (c) {
+
+    }
+
 }
 
 class Ship extends Mass {
@@ -124,7 +165,7 @@ class Ship extends Mass {
     draw (c, guide) {
         c.save()
         c.translate(this.x, this.y)
-        c.rotate(this.angle)
+        //c.rotate(this.angle)
         if (guide && this.compromised) {
             c.save()
             c.fillStyle = "red"
@@ -135,27 +176,22 @@ class Ship extends Mass {
         }
         draw_ship(c, this.radius, {
             guide: guide,
-            thruster: this.thruster_on
+            right_thruster: this.right_thruster,
+            left_thruster: this.left_thruster,
+            up_thruster: this.up_thruster,
+            down_thruster: this.down_thruster
         })
         c.restore()
     }
 
-    update(elapsed, context) {
-        super.push(this.angle, (this.up_thruster - this.down_thruster) * this.thruster_power, elapsed)
-        super.push(this.angle, (this.left_thruster - this.right_thruster) * this.thruster_power, elapsed)
-        //super.twist(
-         //   (this.right_thruster - this.left_thruster) * this.steering_power, 
-        //    elapsed
-        //) 
-        /*
-        this.loaded = this.time_until_reloaded === 0
-            if(!this.loaded) {
-            this.time_until_reloaded -= Math.min(elapsed, this.time_until_reloaded)
-        } */
+    update(context) {
+        super.push(this.angle, (- this.up_thruster + this.down_thruster) * this.thruster_power)
+        super.push(this.angle - Math.PI/2, (- this.left_thruster + this.right_thruster) * this.thruster_power)
+
         if (this.compromised) {
-            this.health -= Math.min(elapsed, this.health)/10
+            this.health -= Math.min(this.health)/10
         }
-        super.update(elapsed, context)
+        super.update(context)
     }
 
 }
@@ -169,8 +205,8 @@ class Asteroid extends Mass {
         super(x, y, mass, radius, 0, x_speed, y_speed, rotation_speed)
         this.circumference = 2 * Math.PI * this.radius
         this.segments = Math.ceil(this.circumference / 15)
-        this.segments = Math.min(25, Math.max(5, this.segments))
-        this.noise = 0.15
+        this.segments = Math.min(25, Math.max(10, this.segments))
+        this.noise = 0.09
         this.shape = []
 
         for (let i = 0; i < this.segments; i++) {
@@ -189,108 +225,86 @@ class Asteroid extends Mass {
         })
         ctx.restore()
     }
+
 }
 
 function draw_ship(ctx, radius, options) {
     options = options || {}
     let angle = (options.angle || 0.5 * Math.PI) / 2
-    let curve1 = options.curve1 || 0.25
-    let curve2 = options.curve2 || 0.75
+    ctx.save()
+
+    //ship
+    ctx.lineWidth = options.lineWidth || 2
+    ctx.strokeStyle = options.stroke || "orange"
+    ctx.fillStyle = options.fill || "blue"
+    ctx.beginPath() // draw the ship in four lines
+    ctx.moveTo(-Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))//to statr draw a ship into moving context into origin
+    ctx.quadraticCurveTo(0, 0, -Math.sqrt((radius*radius)/2), Math.sqrt((radius*radius)/2))
+    ctx.quadraticCurveTo(0, 0, Math.sqrt((radius*radius)/2), Math.sqrt((radius*radius)/2))
+    ctx.quadraticCurveTo(0, 0, Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))
+    ctx.quadraticCurveTo(0, 0, -Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))
+
+    ctx.fill()
+    ctx.stroke()
+
+    ctx.strokeStyle = "blue"
+    ctx.lineWidth = 1
+    ctx.fillStyle = "orange"
+    ctx.beginPath()
+    ctx.arc(0, 0, radius/2, 0, 2 * Math.PI)
+    ctx.fill()
+    ctx.stroke()
+
+    ctx.strokeStyle = "blue"
+    ctx.lineWidth = 1
+    ctx.fillStyle = "yellow"
+    ctx.beginPath()
+    ctx.arc(0, 0, radius/4, 0, 2 * Math.PI)
+    ctx.fill()
+    ctx.stroke()
+
+     //if thrusters on
+     //options.thruster_up = true
+     //options.thruster_down = true
+     //options.thruster_left = true
+     //options.thruster_right = true
+    if (options.up_thruster || options.down_thruster || 
+        options.left_thruster || options.right_thruster ){
+        for ( let i = 0; i < 4 ; i++) {
+            ctx.strokeStyle = "yellow"
+            ctx.fillStyle = "red"
+            ctx.lineWidth = 3
+            ctx.save()
+            ctx.beginPath()
+            if(options.left_thruster) {
+                ctx.moveTo(- radius/2 - 2, - radius/4)
+                ctx.quadraticCurveTo(- radius * 2, 0, - radius / 2 - 2, radius / 4)
+            }
+            if(options.right_thruster) {
+                ctx.moveTo(+ radius/2 + 2, - radius/4)
+                ctx.quadraticCurveTo(+ radius * 2, 0, radius / 2 + 2,  radius / 4)
+            }
+            if(options.up_thruster) {
+                ctx.moveTo( - radius/4, - radius/2 - 2,)
+                ctx.quadraticCurveTo(0, - radius * 2, radius / 4, - radius / 2 - 2, )
+            }
+            if(options.down_thruster) {
+                ctx.moveTo( + radius/4, + radius/2 + 2,)
+                ctx.quadraticCurveTo(0, + radius * 2, - radius / 4, + radius / 2 + 2, )
+            }
+            ctx.fill()
+            ctx.stroke()
+            ctx.restore()
+        }
+    }
     
-    ctx.save();
-    // optionally draw a guide showing the collision radius
+    // a guide line and circle show the control point
     if (options.guide) {
         ctx.strokeStyle = "white"
-        ctx.fillStyle = "rgba(0, 0, 0, 0.25)"
         ctx.lineWidth = 0.5
         ctx.beginPath()
         ctx.arc(0, 0, radius, 0, 2 * Math.PI)
         ctx.stroke()
-        ctx.fill()
-    }
-    
-    // set default values
-    ctx.lineWidth = options.lineWidth || 2
-    ctx.strokeStyle = options.stroke || "white"
-    ctx.fillStyle = options.fill || "black"
-    ctx.beginPath() // draw the ship in three lines
-    ctx.moveTo(radius, 0) //to strat draw a ship into moving context into origin
-    ctx.quadraticCurveTo(
-        Math.cos(angle) * radius * curve2,
-        Math.sin(angle) * radius * curve2,
-        Math.cos(Math.PI - angle) * radius,
-        Math.sin(Math.PI - angle) * radius
-    )
-    ctx.quadraticCurveTo(
-        -radius * curve1, 
-        0,
-        Math.cos(Math.PI + angle) * radius,
-        Math.sin(Math.PI + angle) * radius
-    )
-    ctx.quadraticCurveTo(
-        Math.cos(-angle) * radius * curve2,
-        Math.sin(-angle) * radius * curve2, 
-        radius, 
-        0
-    );
-    ctx.fill()
-    ctx.stroke()
-
-    //thruster
-    if(options.thruster) {
-        ctx.save()
-        ctx.strokeStyle = "yellow"
-        ctx.fillStyle = "red"
-        ctx.lineWidth = 3
-        ctx.beginPath()
-        ctx.moveTo(
-            Math.cos(Math.PI + angle * 0.8) * radius / 2,
-            Math.sin(Math.PI + angle * 0.8) * radius / 2
-        )
-        ctx.quadraticCurveTo(-radius * 2, 0,
-            Math.cos(Math.PI - angle * 0.8) * radius / 2,
-            Math.sin(Math.PI - angle * 0.8) * radius / 2
-        );
-        ctx.fill()
-        ctx.stroke()
-        ctx.restore()
-    }
-
-    // a guide line and circle show the control point
-    if (options.guide) {
-        ctx.strokeStyle = "white"
-        ctx.fillStyle = "white"
-        ctx.lineWidth = 0.5
-        ctx.beginPath()
-        ctx.moveTo(
-            Math.cos(-angle) * radius,
-            Math.sin(-angle) * radius
-        )
-        ctx.lineTo(0, 0);
-        ctx.lineTo(
-            Math.cos(angle) * radius,
-            Math.sin(angle) * radius
-        )
-        ctx.moveTo(-radius, 0)
-        ctx.lineTo(0, 0)
-        ctx.stroke()
-        ctx.beginPath()
-        ctx.arc(
-            Math.cos(angle) * radius * curve2,
-            Math.sin(angle) * radius * curve2,
-            radius/40, 0, 2 * Math.PI
-        )
-        ctx.fill()
-        ctx.beginPath()
-        ctx.arc(
-            Math.cos(-angle) * radius * curve2,
-            Math.sin(-angle) * radius * curve2,
-            radius/40, 0, 2 * Math.PI
-        )
-        ctx.fill()
-        ctx.beginPath()
-        ctx.arc(radius * curve1 - radius, 0, radius/50, 0, 2 *Math.PI)
-        ctx.fill()
     }
     ctx.restore()
 }
@@ -359,6 +373,58 @@ function draw_grid(ctx, minor, major, stroke, fill) {
     }
     
     ctx.restore()
+
+    c.save();
+
+    c.strokeStyle = "red"
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo( dock.x -20 , dock.y - 20,);
+    c.lineTo( dock.x + dock.width + 20 , dock.y - 20,);
+    c.stroke(); 
+    c.closePath();
+
+    c.strokeStyle = "orange"
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo( dock.x -20 , dock.y +10 ,);
+    c.lineTo( dock.x + dock.width + 20 , dock.y +10 );
+    c.stroke(); 
+    c.closePath();
+
+    c.strokeStyle = "yellow"
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo( dock.x + dock.width + 20 , dock.y - 20);
+    c.lineTo( dock.x + dock.width + 20 , dock.y + dock.height + 20);
+    c.stroke(); 
+    c.closePath();
+
+    c.strokeStyle = "orange"
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo( dock.x + dock.width - 10 , dock.y - 20);
+    c.lineTo( dock.x + dock.width -10 , dock.y + dock.height + 20);
+    c.stroke(); 
+    c.closePath();
+
+    c.strokeStyle = "red"
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo( dock.x + dock.width + 20  , dock.y + dock.height + 20);
+    c.lineTo( dock.x -20 , dock.y + dock.height + 20);
+    c.stroke(); 
+    c.closePath();
+
+    c.strokeStyle = "orange"
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo( dock.x + dock.width + 20  , dock.y + dock.height - 10 ,);
+    c.lineTo( dock.x -20 , dock.y + dock.height - 10  );
+    c.stroke(); 
+    c.closePath();
+
+    c.restore();
 }
 
 //to show thrusters
@@ -367,7 +433,7 @@ function key_handler(e, value) {
     switch(e.key || e.keyCode) {
         case "ArrowUp":
         case 38: // up arrow
-            ship.thruster_on = value
+            ship.up_thruster = value
             break
         case "ArrowLeft":
         case 37: // left arrow
@@ -379,7 +445,7 @@ function key_handler(e, value) {
             break
         case "ArrowDown":
         case 40:
-            ship.retro_on = value
+            ship.down_thruster = value
             break
         case " ":
         case 32: //spacebar
@@ -407,6 +473,7 @@ function draw_line(ctx, obj1, obj2) {
 }
 
 function collision(obj1, obj2) {
+    console.log()
     return distance_between(obj1, obj2) < (obj1.radius + obj2.radius)
 }
 function distance_between(obj1, obj2) {
