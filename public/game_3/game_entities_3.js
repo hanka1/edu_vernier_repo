@@ -151,7 +151,6 @@ class Mass {
 class Ship extends Mass {
     constructor(x, y, power) {
         super(x, y, 10, 20, 1.5 * Math.PI)
-        this.thruster_power = power
         this.right_thruster = false
         this.left_thruster = false
         this.up_thruster = false
@@ -185,8 +184,8 @@ class Ship extends Mass {
     }
 
     update(context) {
-        super.push(this.angle, (- this.up_thruster + this.down_thruster) * this.thruster_power)
-        super.push(this.angle - Math.PI/2, (- this.left_thruster + this.right_thruster) * this.thruster_power)
+        super.push(this.angle, (- this.up_thruster + this.down_thruster)/4)
+        super.push(this.angle - Math.PI/2, (- this.left_thruster + this.right_thruster)/4)
 
         if (this.compromised) {
             this.health -= Math.min(this.health)/10
@@ -427,7 +426,7 @@ function draw_grid(ctx, minor, major, stroke, fill) {
     c.restore();
 }
 
-//to show thrusters
+//to show thrusters for test and dev only
 function key_handler(e, value) {
     var nothing_handled = false;
     switch(e.key || e.keyCode) {
@@ -478,4 +477,60 @@ function collision(obj1, obj2) {
 }
 function distance_between(obj1, obj2) {
     return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2))
+}
+
+//todo solve sensor values
+function updateShipThrusters (sensor_values) {
+    try {
+        if (sensor_values.x < 0)
+            return
+
+        //ship.up_thruster
+        if (sensor_values.z > 3.5 && sensor_values.z < 6.5){
+            ship.up_thruster = true
+            setTimeout(() => { ship.up_thruster = false }, 500)
+        }
+
+        if (sensor_values.z > 6.5){
+            ship.up_thruster = true
+            setTimeout(() => { ship.up_thruster = false }, 1000)
+        }
+        // ship.down_thruster 
+        if (sensor_values.z < -3.5 && sensor_values.z > - 6.5){
+            ship.down_thruster = true
+            setTimeout(() => { ship.down_thruster = false }, 500)
+        }
+
+        if (sensor_values.z < - 6.5){
+            ship.down_thruster = true
+            setTimeout(() => { ship.down_thruster = false }, 1000)
+        }
+        //ship.right_thruster
+        if (sensor_values.y > 3.5 && sensor_values.y < 6.5){
+            ship.right_thruster = true
+            setTimeout(() => { ship.right_thruster = false }, 500)
+        }
+
+        if (sensor_values.y > 6.5){
+            ship.right_thruster = true
+            setTimeout(() => { ship.right_thruster = false }, 1000)
+        }
+
+        //ship.left_thruster
+        if (sensor_values.y < -3.5 && sensor_values.y > - 6.5){
+            ship.left_thruster = true
+            setTimeout(() => { ship.left_thruster = false }, 500)
+        }
+
+        if (sensor_values.y < - 6.5){
+            ship.left_thruster = true
+            setTimeout(() => { ship.left_thruster = false }, 1000)
+        }
+
+        //TODO
+        //ship.update(c) 
+
+    } catch (err) {
+        console.log(err)
+    }
 }

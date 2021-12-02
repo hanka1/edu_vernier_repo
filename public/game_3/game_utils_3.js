@@ -29,13 +29,13 @@ function init () {
     dock_doors = new Dock_door (canvas.width - 150, canvas.height - 350, 70, 'black' )
     ship = new Ship(canvas.width / 2, canvas.height / 2, 0.1)
 
-    for (let j = 0; j < 3; j++) {
+    for (let j = 0; j < 2; j++) {
         let asteroid = new Asteroid(
             Math.random() * c.canvas.width,
             Math.random() * c.canvas.height,
             200 + Math.random() * 1000
         )
-        asteroid.push(Math.random() * 2 * Math.PI, 400, 60)//to push asteroid to move
+        //asteroid.push(Math.random() * 2 * Math.PI, 400, 60)//to push asteroid to move
         //asteroid.twist((Math.random()-0.5) * 200, 60)
         asteroids.push(asteroid) //to add asteroit to asterois array
     }
@@ -51,8 +51,8 @@ function animate(timestamp) {
         c.clearRect(0, 0, c.canvas.width, c.canvas.height)
         update()
         draw(c)
-
-        if ( i > 120 ) {
+        //todo time or health measuring for score
+        if ( i > 12000 ) {
             //TODO
             gdxDevice.close()	
         
@@ -75,19 +75,6 @@ c.canvas.addEventListener("keydown", (e) => {
 c.canvas.addEventListener("keyup", (e) => {
     key_handler(e, false)
 }, true)
-
-//todo solve sensor values
-function updateShip (sensor_values) {
-    try {
-
-        //TODO
-        //ship.update() 
-        console.log(sensor_values)
-
-    } catch (err) {
-        console.log(err)
-    }
-}
 
 function draw() {
     c.clearRect(0, 0, c.canvas.width, c.canvas.height)
@@ -115,8 +102,14 @@ function update(){
         //todo end of game WIN
         ship.up_thruster = false; ship.down_thruster = false; 
         ship.right_thruster = false; ship.left_thruster = false; 
-        if (gdxDevice)
-            gdxDevice.close()	
+        setTimeout(() => {
+            cancelAnimationFrame(animation_id) 
+            modelEl.hidden = false
+            scoreTotalEl.innerHTML = score
+            if (gdxDevice)
+            gdxDevice.close()
+        }, 2000)
+	
         output.textContent += ("GAME OVER. YOU WIN!")
         cancelAnimationFrame(animation_id)
     }
@@ -126,7 +119,7 @@ function update(){
         
         //ship collision
         if (collision (asteroids[i], ship)) {
-            //ship.compromised = tru
+            //ship.compromised = true
             //todo
         }
 
@@ -143,5 +136,5 @@ function update(){
 
     }
     ship.update(c)
-    
+
 }
