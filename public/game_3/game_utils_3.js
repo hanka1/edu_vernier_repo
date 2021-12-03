@@ -16,114 +16,110 @@ let i = 0
 
 let particles = []
 let asteroids = []
-
-let ship = new Ship(canvas.width / 2, canvas.height / 2, 0.1)
+let ship
 let guide = false
-let mySound = new sound("../sounds/crash.mp3");
-
-//to restart game properties
-function init () {
-    c.fillStyle = "black"
-    c.fillRect(0 , 0, canvas.width, canvas.height)
-
-    dock = new Dock (canvas.width - 150, canvas.height - 350, 100, 70, 'rgb(200, 231, 240)' )
-    dock_doors = new Dock_door (canvas.width - 150, canvas.height - 350, 70, 'black' )
-    ship = new Ship(canvas.width / 2, canvas.height / 2, 0.1)
-
-    for (let j = 0; j < 2; j++) {
-        let asteroid = new Asteroid(
-            Math.random() * c.canvas.width,
-            Math.random() * c.canvas.height,
-            200 + Math.random() * 1000
-        )
-        //asteroid.push(Math.random() * 2 * Math.PI, 400, 60)//to push asteroid to move
-        //asteroid.twist((Math.random()-0.5) * 200, 60)
-        asteroids.push(asteroid) //to add asteroit to asterois array
-    }  
-    score = 0
-    scoreEl.innerHTML = score
-    scoreTotalEl.innerHTML = score
-}
-
-function animate() {
-    try {
-        animation_id = requestAnimationFrame(animate)
-        c.clearRect(0, 0, c.canvas.width, c.canvas.height)
-        update()
-        draw()
-        //todo time or health measuring for score
-        if ( i > 12 ) {
-            //TODO
-            gameOver()
-        }
- 
-    } catch (err) {
-        console.log(err)
-        output.textContent += (err.toString())
-        output.textContent += ('Try to reload page and/or switch off / switch on device.')
-    }
-}
-
-//for testing and dev only
-c.canvas.addEventListener("keydown", (e) => {
-    key_handler(e, true)
-}, true)
-   
-c.canvas.addEventListener("keyup", (e) => {
-    key_handler(e, false)
-}, true)
+let mySound = new Sound("../sounds/crash.mp3");
 
 function draw() {
-    c.clearRect(0, 0, c.canvas.width, c.canvas.height)
-    dock.draw(c) 
-    dock_doors.draw(c) 
+    try{
+        c.clearRect(0, 0, c.canvas.width, c.canvas.height)
+        dock.draw(c) 
+        dock_doors.draw(c) 
 
-    if (guide)
-        draw_grid(c)
-
-    asteroids.forEach((asteroid)=>{
-        asteroid.draw(c, guide)
         if (guide)
-            draw_line(c, asteroid, ship)
-    })
+            draw_grid(c)
 
-    ship.draw(c, guide)
-    //health_indicator.draw(c, ship.health, ship.max_health)
+        asteroids.forEach((asteroid)=>{
+            asteroid.draw(c, guide)
+            if (guide)
+                draw_line(c, asteroid, ship)
+        })
 
+        ship.draw(c, guide)
+        //health_indicator.draw(c, ship.health, ship.max_health)
+        
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 //todo collisions, score, time measuring
 function update(){
-    //ship.compromised = false
-    if (ship.in_dock){
-        //todo end of game WIN
-        ship.up_thruster = false; ship.down_thruster = false; 
-        ship.right_thruster = false; ship.left_thruster = false; 
-        output.textContent += ("YOU WIN!")
-        gameOver()
-    }
-    console.log(ship.in_dock)
-
-    for (let i = 0; i < asteroids.length; i++){
-        
-        //ship collision
-        if (collision (asteroids[i], ship)) {
-            //ship.compromised = true
-            //todo
+    try{
+        //ship.compromised = false
+        if (ship.in_dock){
+            output.textContent += ("YOU WIN!\n")
+            gameOver()
         }
 
-        //asteroids collision
-        for (let j = 0; j < asteroids.length; j++){
-    
-            if (collision (asteroids[i], asteroids[j]) && asteroids[i] != asteroids[j]) {
+        for (let i = 0; i < asteroids.length; i++){
+            
+            //ship collision
+            if (collision (asteroids[i], ship)) {
+                //ship.compromised = true
                 //todo
-                asteroids[j].update(c)
             }
+
+            //asteroids collision
+            for (let j = 0; j < asteroids.length; j++){
+        
+                if (collision (asteroids[i], asteroids[j]) && asteroids[i] != asteroids[j]) {
+                    //todo
+                    asteroids[j].update(c)
+                }
+            }
+            asteroids[i].update(c)
+
+
         }
-        asteroids[i].update(c)
-
-
+        ship.update(c)
+        
+    } catch (err) {
+        console.log(err)
     }
-    ship.update(c)
+}
 
+//todo solve sensor values
+function updateShipThrusters (sensor_values) {
+    try {
+        i++ //i for testing and developmnet only
+        if (sensor_values.x < -2)
+            return
+        
+        if (sensor_values.z > 0)
+            updateEachThruster(sensor_values.z, 'up_thruster')
+        else
+            updateEachThruster( - sensor_values.z, 'down_thruster')
+
+        if (sensor_values.y > 0)
+            updateEachThruster(sensor_values.y, 'right_thruster')
+        else
+            updateEachThruster( - sensor_values.y, 'left_thruster')
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function updateEachThruster (sensor_value, thruster) {
+    try {
+
+        if (sensor_value > 3.5 && sensor_value < 6.5){
+            ship[thruster] = 1
+            setTimeout(() => { ship[thruster] = false }, 300)
+        }
+
+        if (sensor_value > 6.5 && sensor_value < 8.5){
+            ship[thruster] = 2
+            setTimeout(() => { ship[thruster] = false }, 600)
+        }
+
+        if (sensor_value > 8.5){
+            ship[thruster] = 3
+            setTimeout(() => { ship[thruster] = false }, 900)
+        }
+
+    } catch (err) {
+        console.log(err)
+    }
 }

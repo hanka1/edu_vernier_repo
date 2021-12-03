@@ -38,8 +38,8 @@ class Dock_door {
     }
 }
 
-let dock = new Dock (canvas.width - 150, canvas.height - 350, 100, 70, 'rgb(200, 231, 240)' )
-let dock_doors = new Dock_door (canvas.width - 150, canvas.height - 350, 70, 'black' )
+let dock
+let dock_doors
 
 class Mass {
     constructor (x, y, mass, radius, angle, x_speed, y_speed, rotation_speed) {
@@ -75,6 +75,7 @@ class Mass {
             mySound.play()
         }
 
+        //in the dock
         if ( 
             dock.y + this.radius < this.y &&
             dock.y + dock.height - this.radius > this.y &&
@@ -105,7 +106,6 @@ class Mass {
                 this.y_speed = -this.y_speed
             }
             
-
         //todo hit the dock right side
         if (dock.x + dock.width + this.radius > this.x && dock.x + dock.width - this.radius < this.x &&
             dock.y - this.radius < this.y && dock.y + dock.height + this.radius > this.y ){
@@ -113,7 +113,6 @@ class Mass {
                 this.x_speed = -this.x_speed
             }
             
-
         //todo edge and corner cases
         //this.force = this.mass * Math.sqrt(this.x * this.x + this.y * this.y)
     
@@ -159,8 +158,9 @@ class Mass {
 }
 
 class Ship extends Mass {
-    constructor(x, y, power) {
-        super(x, y, 10, 20, 1.5 * Math.PI)
+    //the bigger mass means smaller reaction to thrusters
+    constructor(x, y, mass) {
+        super(x, y, mass, 20, 1.5 * Math.PI)
         this.right_thruster = false
         this.left_thruster = false
         this.up_thruster = false
@@ -172,30 +172,43 @@ class Ship extends Mass {
     }
 
     draw (c, guide) {
-        c.save()
-        c.translate(this.x, this.y)
-        //c.rotate(this.angle)
-        if (guide && this.compromised) {
+        if (ship.in_dock) {
+            this.drawDockedShip(c)
+        } else {
             c.save()
-            c.fillStyle = "red"
-            c.beginPath()
-            c.arc(0, 0, this.radius, 0, 2 * Math.PI)
-            c.fill()
+            c.translate(this.x, this.y)
+            //c.rotate(this.angle)
+            if (guide && this.compromised) {
+                c.save()
+                c.fillStyle = "red"
+                c.beginPath()
+                c.arc(0, 0, this.radius, 0, 2 * Math.PI)
+                c.fill()
+                c.restore()
+            }
+            draw_ship(c, this.radius, {
+                guide: guide,
+                right_thruster: this.right_thruster,
+                left_thruster: this.left_thruster,
+                up_thruster: this.up_thruster,
+                down_thruster: this.down_thruster
+            })
             c.restore()
         }
-        draw_ship(c, this.radius, {
-            guide: guide,
-            right_thruster: this.right_thruster,
-            left_thruster: this.left_thruster,
-            up_thruster: this.up_thruster,
-            down_thruster: this.down_thruster
-        })
+    }
+    
+    drawDockedShip (c) {
+        c.save()
+        let image = new Image
+        image.src = '../images/ship2.png'
+        c.beginPath()
+        c.drawImage(image, dock.x + dock.width / 2, dock.y + 4)
         c.restore()
     }
 
     update(context) {
-        super.push(this.angle, (- this.up_thruster + this.down_thruster)/4)
-        super.push(this.angle - Math.PI/2, (- this.left_thruster + this.right_thruster)/4)
+        super.push(this.angle, (- this.up_thruster + this.down_thruster))
+        super.push(this.angle - Math.PI/2, (- this.left_thruster + this.right_thruster))
 
         if (this.compromised) {
             this.health -= Math.min(this.health)/10
@@ -237,6 +250,23 @@ class Asteroid extends Mass {
 
 }
 
+class Sound {
+    constructor(src) {
+        this.sound = document.createElement("audio")
+        this.sound.src = src
+        this.sound.setAttribute("preload", "auto")
+        this.sound.setAttribute("controls", "none")
+        this.sound.style.display = "none"
+        document.body.appendChild(this.sound)
+    }
+    play(){
+        this.sound.play()
+    }
+    stop(){
+        this.sound.pause()
+    }    
+}
+
 function draw_ship(ctx, radius, options) {
     options = options || {}
     let angle = (options.angle || 0.5 * Math.PI) / 2
@@ -272,11 +302,7 @@ function draw_ship(ctx, radius, options) {
     ctx.fill()
     ctx.stroke()
 
-     //if thrusters on
-     //options.thruster_up = true
-     //options.thruster_down = true
-     //options.thruster_left = true
-     //options.thruster_right = true
+     //draw thrusters if on
     if (options.up_thruster || options.down_thruster || 
         options.left_thruster || options.right_thruster ){
         for ( let i = 0; i < 4 ; i++) {
@@ -287,19 +313,19 @@ function draw_ship(ctx, radius, options) {
             ctx.beginPath()
             if(options.left_thruster) {
                 ctx.moveTo(- radius/2 - 2, - radius/4)
-                ctx.quadraticCurveTo(- radius * 2, 0, - radius / 2 - 2, radius / 4)
+                ctx.quadraticCurveTo(- radius - options.left_thruster*12, 0, - radius / 2 - 2, radius / 4)
             }
             if(options.right_thruster) {
                 ctx.moveTo(+ radius/2 + 2, - radius/4)
-                ctx.quadraticCurveTo(+ radius * 2, 0, radius / 2 + 2,  radius / 4)
+                ctx.quadraticCurveTo(+ radius + options.right_thruster*12, 0, radius / 2 + 2,  radius / 4)
             }
             if(options.up_thruster) {
                 ctx.moveTo( - radius/4, - radius/2 - 2,)
-                ctx.quadraticCurveTo(0, - radius * 2, radius / 4, - radius / 2 - 2, )
+                ctx.quadraticCurveTo(0, - radius - options.up_thruster*12, radius / 4, - radius / 2 - 2, )
             }
             if(options.down_thruster) {
                 ctx.moveTo( + radius/4, + radius/2 + 2,)
-                ctx.quadraticCurveTo(0, + radius * 2, - radius / 4, + radius / 2 + 2, )
+                ctx.quadraticCurveTo(0, + radius + options.down_thruster*12, - radius / 4, + radius / 2 + 2, )
             }
             ctx.fill()
             ctx.stroke()
@@ -436,9 +462,11 @@ function draw_grid(ctx, minor, major, stroke, fill) {
     c.restore();
 }
 
-//to show thrusters for test and dev only
+//to control thrusters for test and dev only
 function key_handler(e, value) {
-    var nothing_handled = false;
+    var nothing_handled = false
+    if(value)
+        value = 1
     switch(e.key || e.keyCode) {
         case "ArrowUp":
         case 38: // up arrow
@@ -489,75 +517,6 @@ function distance_between(obj1, obj2) {
     return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2))
 }
 
-//todo solve sensor values
-function updateShipThrusters (sensor_values) {
-    try {
-        i++
-        if (sensor_values.x < 0)
-            return
 
-        //ship.up_thruster
-        if (sensor_values.z > 3.5 && sensor_values.z < 6.5){
-            ship.up_thruster = true
-            setTimeout(() => { ship.up_thruster = false }, 500)
-        }
 
-        if (sensor_values.z > 6.5){
-            ship.up_thruster = true
-            setTimeout(() => { ship.up_thruster = false }, 1000)
-        }
-        // ship.down_thruster 
-        if (sensor_values.z < -3.5 && sensor_values.z > - 6.5){
-            ship.down_thruster = true
-            setTimeout(() => { ship.down_thruster = false }, 500)
-        }
-
-        if (sensor_values.z < - 6.5){
-            ship.down_thruster = true
-            setTimeout(() => { ship.down_thruster = false }, 1000)
-        }
-        //ship.right_thruster
-        if (sensor_values.y > 3.5 && sensor_values.y < 6.5){
-            ship.right_thruster = true
-            setTimeout(() => { ship.right_thruster = false }, 500)
-        }
-
-        if (sensor_values.y > 6.5){
-            ship.right_thruster = true
-            setTimeout(() => { ship.right_thruster = false }, 1000)
-        }
-
-        //ship.left_thruster
-        if (sensor_values.y < -3.5 && sensor_values.y > - 6.5){
-            ship.left_thruster = true
-            setTimeout(() => { ship.left_thruster = false }, 500)
-        }
-
-        if (sensor_values.y < - 6.5){
-            ship.left_thruster = true
-            setTimeout(() => { ship.left_thruster = false }, 1000)
-        }
-
-        //TODO
-        //ship.update(c) 
-
-    } catch (err) {
-        console.log(err)
-    }
-}
-
-function sound(src) {
-    this.sound = document.createElement("audio")
-    this.sound.src = src
-    this.sound.setAttribute("preload", "auto")
-    this.sound.setAttribute("controls", "none")
-    this.sound.style.display = "none"
-    document.body.appendChild(this.sound)
-    this.play = function(){
-        this.sound.play()
-    }
-    this.stop = function(){
-        this.sound.pause()
-    }    
-}
 
