@@ -2,8 +2,14 @@ const usbBtn = document.querySelector('#usb')
 const usbLabel = document.querySelector('#usb_label')
 const bleBtn = document.querySelector('#ble')
 const bleLabel = document.querySelector('#ble_label')
-const selectDeviceBtn = document.querySelector('#select_device')
+const startGameBtn = document.querySelector('#startGameBtn')
+const startGameBox = document.querySelector('#startGameBox')
+const connectDeviceBtn = document.querySelector('#connectDeviceBtn')
+const connectDeviceBox = document.querySelector('#connectDeviceBox')
+const disconnectDeviceBtn = document.querySelector('#disconnectDeviceBtn')
 const output = document.querySelector('#output')
+
+let gdxDevice
 
 //to choose device sensor to control the game
 function chooseControlSensors (device) {
@@ -31,33 +37,45 @@ function chooseControlSensors (device) {
     }
 }
 
-//to create button to select a device
-function createSelectButton () {
-    try {
+//to select a device
+async function connectDevice () {
+    const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"
+      try {
 
-        if (navigator.bluetooth) {
-            bleLabel.innerHTML = `Bluetooth`
-        } else {
-            if (navigator.hid) usbBtn.checked = true
-            bleLabel.innerHTML = `Bluetooth <span style="color:red">Not Supported</span> <a href="https://webbluetoothcg.github.io/web-bluetooth/">More information</a>`
-            bleBtn.disabled = true
-        }
+        //to set control sensor from device
+        startGameBox.hidden = true
+        gdxDevice = await godirect.selectDevice(bluetooth)
+        connectDeviceBox.hidden = true
+        output.textContent += `\nConnected to `+ gdxDevice.name + `\n`
         
-        if (navigator.hid) {
-            usbLabel.innerHTML = `USB`
-        } else {
-            if (navigator.bluetooth) bleBtn.checked = true
-            usbLabel.innerHTML = `USB <span style="color:red">Not Supported</span> <a href="https://wicg.github.io/webhid/">More information</a>`
-            usbBtn.disabled = true
-        }
-        
-        if (!navigator.bluetooth && !navigator.hid) {
-            selectDeviceBtn.style.visibility='hidden'
-        } 
+        gdxDevice.on('device-closed', () => {
+            output.textContent += `Device disconnected.\n`
+            startGameBox.hidden = true
+            connectDeviceBox.hidden = false
+        })
+        chooseControlSensors(gdxDevice) //to choose X,Y,Z-axis acceleration
+        gdxDevice.stop()
+        startGameBox.hidden = false 
 
     } catch (err) {
         console.log(err)
         output.textContent += (err.toString())
         output.textContent += ('Try to reload page and/or switch off / switch on device.')
+    }
+}
+
+async function disconnectDevice () {
+      try {
+
+        if(!gdxDevice || !gdxDevice.opened)
+            output.textContent += `\nNo device connected.\n`
+        else {
+            gdxDevice.close()
+            startGameBox.hidden = true
+            connectDeviceBox.hidden = false
+        }
+
+    } catch (err) {
+        console.log(err)
     }
 }

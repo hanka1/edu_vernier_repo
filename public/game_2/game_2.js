@@ -6,7 +6,7 @@ const playGameWithDevice = async () => {
       try {
 
         //to set control sensor from device
-        modelEl.hidden = true
+        startGameBox.hidden = true
         gdxDevice = await godirect.selectDevice(bluetooth)
         output.textContent += `\nConnected to `+ gdxDevice.name + `\n`
         
@@ -14,7 +14,7 @@ const playGameWithDevice = async () => {
         gdxDevice.on('device-closed', () => {
             output.textContent += `\n\nDevice disconnected. GAME OVER.\n`
             setTimeout(() => { 
-                modelEl.hidden = false
+                startGameBox.hidden = false
             }, 2000)
         })
 

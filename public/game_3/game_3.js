@@ -1,38 +1,11 @@
-//to start game there is needed to select control device
-createSelectButton() //for production uncomment
-
-//for test and dev else delte or comment
-//modelEl.hidden = true 
-//init() 
-//animate()
-
 const playGameWithDevice = async () => { 
-    const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"
       try {
-
-        //to set control sensor from device
-        modelEl.hidden = true
-        gdxDevice = await godirect.selectDevice(bluetooth)
-        output.textContent += `\nConnected to `+ gdxDevice.name + `\n`
-        
-        gdxDevice.on('device-closed', () => {
-            output.textContent += `\n\nDevice disconnected. GAME OVER.\n`
-            setTimeout(() => { 
-                modelEl.hidden = false
-            }, 2000)
-        })
-
-        chooseControlSensors(gdxDevice) //to choose X,Y,Z-axis acceleration
-
-        //to init a new game
-        init() 
-        animate()
+        startNewGame()
 
         let sensor_values = {x: false, y: false, z: false}
 
         gdxDevice.sensors.forEach( sensor => {
             sensor.on('value-changed', (sensor) => {
-                i++
                 //to shoot on each time sensor values changed
                 if (sensor.name == 'X-axis acceleration'){
                     sensor_values.x = sensor.value
@@ -55,4 +28,39 @@ const playGameWithDevice = async () => {
     }
 }
 
+connectDeviceBtn.addEventListener('click', connectDevice )
 startGameBtn.addEventListener('click', playGameWithDevice )
+disconnectDeviceBtn.addEventListener('click', disconnectDevice )
+
+function gameOver() {
+    try{
+        cancelAnimationFrame(animation_id)
+        gdxDevice.stop()
+        i = 0
+        output.textContent += ("GAME OVER \n")
+        setTimeout(() => {
+            startGameBox.hidden = false
+            scoreTotalEl.innerHTML = score               
+        }, 2000)
+        
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function startNewGame() {
+    try{
+    
+        startGameBox.hidden = true 
+        particles = []
+        asteroids = []
+        init() 
+        animate()
+        gdxDevice.start()
+        console.log ("GAME STARTED \n")
+
+    } catch (err) {
+        console.log(err)
+    }
+}

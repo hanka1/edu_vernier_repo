@@ -10,7 +10,7 @@ const sensorArray = document.querySelector('#sensor_array')
 const canvas = document.querySelector('canvas')
 const scoreEl = document.querySelector('#scoreEl')
 const startGameBtn = document.querySelector('#startGameBtn')
-const modelEl = document.querySelector('#modelEl')
+const startGameBox = document.querySelector('#startGameBox')
 const scoreTotalEl = document.querySelector('#scoreTotalEl')
 const divCanvasGame = document.querySelector('#div_canvas_game')
 
@@ -180,7 +180,7 @@ function animateEnemyInteractions (enemy, index_enemy) {
                 endGameEffect()
                 setTimeout(() => {
                     cancelAnimationFrame(animation_id) 
-                    modelEl.hidden = false
+                    startGameBox.hidden = false
                     scoreTotalEl.innerHTML = score
                     gdxDevice.close()
                     clearInterval(spawn_enemy_interval)

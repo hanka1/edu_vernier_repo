@@ -1,5 +1,3 @@
-
-
 class Dock {
     constructor (x, y, width, height, color) {
         this.x = x
@@ -54,7 +52,7 @@ class Mass {
         this.y_speed = y_speed || 0
         this.rotation_speed = rotation_speed || 0
         //todo force calculation
-        this.force = this.mass * Math.sqrt(this.x_speed * this.x_speed + this.y_speed + this.y_speed)
+        this.force = this.mass * Math.sqrt(this.x_speed * this.x_speed + this.y_speed * this.y_speed)
         this.in_dock = false
     }
 
@@ -494,6 +492,7 @@ function distance_between(obj1, obj2) {
 //todo solve sensor values
 function updateShipThrusters (sensor_values) {
     try {
+        i++
         if (sensor_values.x < 0)
             return
 
@@ -561,3 +560,4 @@ function sound(src) {
         this.sound.pause()
     }    
 }
+

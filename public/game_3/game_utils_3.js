@@ -1,7 +1,5 @@
 const canvas = document.querySelector('canvas')
 const scoreEl = document.querySelector('#scoreEl')
-const startGameBtn = document.querySelector('#startGameBtn')
-const modelEl = document.querySelector('#modelEl')
 const scoreTotalEl = document.querySelector('#scoreTotalEl')
 const divCanvasGame = document.querySelector('#div_canvas_game')
 
@@ -12,7 +10,6 @@ canvas.height = CANVAS_HEIGHT
 canvas.width = CANVAS_WIDTH
 const c = canvas.getContext('2d')
 
-let gdxDevice
 let animation_id
 let score = 0
 let i = 0
@@ -26,6 +23,9 @@ let mySound = new sound("../sounds/crash.mp3");
 
 //to restart game properties
 function init () {
+    c.fillStyle = "black"
+    c.fillRect(0 , 0, canvas.width, canvas.height)
+
     dock = new Dock (canvas.width - 150, canvas.height - 350, 100, 70, 'rgb(200, 231, 240)' )
     dock_doors = new Dock_door (canvas.width - 150, canvas.height - 350, 70, 'black' )
     ship = new Ship(canvas.width / 2, canvas.height / 2, 0.1)
@@ -39,26 +39,22 @@ function init () {
         //asteroid.push(Math.random() * 2 * Math.PI, 400, 60)//to push asteroid to move
         //asteroid.twist((Math.random()-0.5) * 200, 60)
         asteroids.push(asteroid) //to add asteroit to asterois array
-    }
-    
+    }  
     score = 0
     scoreEl.innerHTML = score
     scoreTotalEl.innerHTML = score
 }
 
-function animate(timestamp) {
+function animate() {
     try {
         animation_id = requestAnimationFrame(animate)
         c.clearRect(0, 0, c.canvas.width, c.canvas.height)
         update()
-        draw(c)
+        draw()
         //todo time or health measuring for score
-        if ( i > 12000 ) {
+        if ( i > 12 ) {
             //TODO
-            gdxDevice.close()	
-        
-            output.textContent += ("GAME OVER")
-            cancelAnimationFrame(animation_id)
+            gameOver()
         }
  
     } catch (err) {
@@ -103,16 +99,8 @@ function update(){
         //todo end of game WIN
         ship.up_thruster = false; ship.down_thruster = false; 
         ship.right_thruster = false; ship.left_thruster = false; 
-        setTimeout(() => {
-            cancelAnimationFrame(animation_id) 
-            modelEl.hidden = false
-            scoreTotalEl.innerHTML = score
-            if (gdxDevice)
-            gdxDevice.close()
-        }, 2000)
-	
-        output.textContent += ("GAME OVER. YOU WIN!")
-        cancelAnimationFrame(animation_id)
+        output.textContent += ("YOU WIN!")
+        gameOver()
     }
     console.log(ship.in_dock)
 

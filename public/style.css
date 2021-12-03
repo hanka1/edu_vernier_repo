@@ -36,7 +36,7 @@ button {
     color: rgb(14, 61, 88);
 }
   
-button:hover {background-color: rgb(135, 219, 137)}
+button:hover {background-color: rgb(135, 219, 137);}
   
   
 button:active {
@@ -55,9 +55,9 @@ button:active {
 .button_stop{
     background-color: #d86965;
     font-size: 16px;
-    width: 400px;
     text-align-last: left;
 }
+.button_stop:hover {background-color: rgb(200, 231, 240);}
 
 .button_vernier{
     background-color: rgb(230, 198, 176);
@@ -133,7 +133,7 @@ canvas{
     text-align: center;
     border-radius: 15px;
     width: 320px;
-    height: 280px;
+    height: 320px;
     background-color:rgb(200, 231, 240);
 }
 
@@ -182,11 +182,6 @@ canvas{
     content: "";
     clear: both;
     display: table;
-}
-
-.newton_law {
-    color: rgb(14, 61, 88);
-    padding: 15px;
 }
 
 
