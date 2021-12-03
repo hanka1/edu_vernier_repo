@@ -17,14 +17,14 @@ let i = 0
 let particles = []
 let asteroids = []
 let ship
-let guide = false
-let mySound = new Sound("../sounds/crash.mp3");
+let guide = GUIDE_LINES
+let mySound = new Sound(CRASH_SOUND_1)
+let fuel_indicator = new Indicator( 45, 12, 120, 12)
 
 function draw() {
     try{
         c.clearRect(0, 0, c.canvas.width, c.canvas.height)
         dock.draw(c) 
-        dock_doors.draw(c) 
 
         if (guide)
             draw_grid(c)
@@ -36,7 +36,7 @@ function draw() {
         })
 
         ship.draw(c, guide)
-        //health_indicator.draw(c, ship.health, ship.max_health)
+        fuel_indicator.draw(c, ship.fuel, ship.max_fuel)
         
     } catch (err) {
         console.log(err)
@@ -52,11 +52,15 @@ function update(){
             gameOver()
         }
 
+        if (ship.fuel <= 0 ){
+            output.textContent += ("SHIP OUT OF FUEL!\n")
+            gameOver()
+        }
+
         for (let i = 0; i < asteroids.length; i++){
             
             //ship collision
             if (collision (asteroids[i], ship)) {
-                //ship.compromised = true
                 //todo
             }
 
@@ -65,12 +69,9 @@ function update(){
         
                 if (collision (asteroids[i], asteroids[j]) && asteroids[i] != asteroids[j]) {
                     //todo
-                    asteroids[j].update(c)
                 }
             }
             asteroids[i].update(c)
-
-
         }
         ship.update(c)
         
@@ -79,10 +80,11 @@ function update(){
     }
 }
 
+
 //todo solve sensor values
 function updateShipThrusters (sensor_values) {
     try {
-        i++ //i for testing and developmnet only
+        i++ //i for testing and development only
         if (sensor_values.x < -2)
             return
         
@@ -104,19 +106,55 @@ function updateShipThrusters (sensor_values) {
 function updateEachThruster (sensor_value, thruster) {
     try {
 
-        if (sensor_value > 3.5 && sensor_value < 6.5){
+        if (sensor_value > THRUSTER_LIMIT_1 && sensor_value <= THRUSTER_LIMIT_2){
             ship[thruster] = 1
+            ship.fuel -= 1
             setTimeout(() => { ship[thruster] = false }, 300)
         }
 
-        if (sensor_value > 6.5 && sensor_value < 8.5){
+        if (sensor_value > THRUSTER_LIMIT_2 && sensor_value <= THRUSTER_LIMIT_3){
             ship[thruster] = 2
+            ship.fuel -= 2
             setTimeout(() => { ship[thruster] = false }, 600)
         }
 
-        if (sensor_value > 8.5){
+        if (sensor_value > THRUSTER_LIMIT_3){
             ship[thruster] = 3
+            ship.fuel -= 3
             setTimeout(() => { ship[thruster] = false }, 900)
+        }
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function spawnAsteroids() {
+    try {
+        let i = 0
+        while ( i < ASTEROIDS_TOTAL ) {
+
+            let size = ASTEROIDS_SIZE + Math.random() * ASTEROIDS_SIZE * 5
+
+            let radius = Math.sqrt( size / Math.PI)
+            let x = Math.random() * c.canvas.width
+            let y = Math.random() * c.canvas.height
+
+            //not to spawn near the border or dock
+            if ( x < 2 * radius || y < 2 * radius 
+                ||
+                x > c.canvas.width - 2 * radius || y > c.canvas.height - 2 * radius 
+                ||
+                ( x > dock.x - 2 * radius && x < dock.x + dock.width + 2 * radius && 
+                  y > dock.y - 2 * radius && y < dock.y + dock.height + 2 * radius )
+            )
+                continue
+
+            i++
+            let asteroid = new Asteroid(x, y, size)
+            asteroid.push(Math.random() * 2 * Math.PI, PUSH_ASTEROID_FORCE)//to push asteroid to move
+            //asteroid.twist((Math.random()-0.5) * 200, 60)
+            asteroids.push(asteroid) //to add asteroit to asterois array
         }
 
     } catch (err) {

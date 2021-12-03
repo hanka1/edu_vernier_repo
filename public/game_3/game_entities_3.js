@@ -10,7 +10,6 @@ class Dock {
         c.save()
         c.beginPath()
         c.rect(this.x, this.y, this.width, this.height)
-        //c.rect(this.x, this.y, this.width, this.height)
         c.fillStyle = this.color
         c.fill()
 
@@ -18,28 +17,17 @@ class Dock {
         c.strokeStyle =  "rgb(14, 61, 88)"
         c.stroke()
         c.restore()
-    }
-}
 
-class Dock_door {
-    constructor (x, y, height, color) {
-        this.x = x
-        this.y = y 
-        this.height = height 
-        this.color = color
-    }
-    draw (c) {
         c.save()
         c.beginPath()
         c.rect(this.x - 5, this.y - 5, 15, this.height + 10)
-        c.fillStyle = this.color 
+        c.fillStyle = 'black'
         c.fill()
         c.restore()
     }
 }
 
 let dock
-let dock_doors
 
 class Mass {
     constructor (x, y, mass, radius, angle, x_speed, y_speed, rotation_speed) {
@@ -166,9 +154,8 @@ class Ship extends Mass {
         this.up_thruster = false
         this.down_thruster = false
 
-        this.compromised = false
-        this.max_health = 2.0
-        this.health = this.max_health
+        this.max_fuel = SHIP_MAX_FUEL
+        this.fuel = this.max_fuel
     }
 
     draw (c, guide) {
@@ -207,15 +194,13 @@ class Ship extends Mass {
     }
 
     update(context) {
-        super.push(this.angle, (- this.up_thruster + this.down_thruster))
-        super.push(this.angle - Math.PI/2, (- this.left_thruster + this.right_thruster))
-
-        if (this.compromised) {
-            this.health -= Math.min(this.health)/10
-        }
+        //consoleLogThurstersPower(this.up_thruster, this.down_thruster, this.left_thruster, this.right_thruster)
+        super.push(this.angle, - this.up_thruster)
+        super.push(this.angle, this.down_thruster)
+        super.push(this.angle - Math.PI/2, this.right_thruster)
+        super.push(this.angle - Math.PI/2, - this.left_thruster)
         super.update(context)
     }
-
 }
 
 class Asteroid extends Mass {
@@ -267,6 +252,32 @@ class Sound {
     }    
 }
 
+class Indicator {
+    constructor (x, y, width, height) {
+        //this.label = label + ":  "
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height 
+    }
+    
+    draw (c, max, level) {
+        c.save()
+        c.strokeStyle = "rgb(145, 226, 215)"
+        c.fillStyle = "rgb(145, 226, 215)"
+        //c.font = this.height + "pt Calibri"
+        //let offset = c.measureText(this.label).width
+        //c.fillText(this.label, this.x, this.y + this.height - 1)
+        c.beginPath()
+        c.rect(this.x, this.y, this.width, this.height)
+        c.stroke()
+        c.beginPath()
+        c.rect(this.x, this.y, this.width * (max / level), this.height)
+        c.fill()
+        c.restore()
+    }
+}
+
 function draw_ship(ctx, radius, options) {
     options = options || {}
     let angle = (options.angle || 0.5 * Math.PI) / 2
@@ -305,7 +316,6 @@ function draw_ship(ctx, radius, options) {
      //draw thrusters if on
     if (options.up_thruster || options.down_thruster || 
         options.left_thruster || options.right_thruster ){
-        for ( let i = 0; i < 4 ; i++) {
             ctx.strokeStyle = "yellow"
             ctx.fillStyle = "red"
             ctx.lineWidth = 3
@@ -330,7 +340,6 @@ function draw_ship(ctx, radius, options) {
             ctx.fill()
             ctx.stroke()
             ctx.restore()
-        }
     }
     
     // a guide line and circle show the control point
@@ -465,8 +474,12 @@ function draw_grid(ctx, minor, major, stroke, fill) {
 //to control thrusters for test and dev only
 function key_handler(e, value) {
     var nothing_handled = false
-    if(value)
+    
+    if (value){
         value = 1
+        ship.fuel -= 1
+    }
+        
     switch(e.key || e.keyCode) {
         case "ArrowUp":
         case 38: // up arrow
@@ -517,6 +530,20 @@ function distance_between(obj1, obj2) {
     return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2))
 }
 
+//for development and testing
+let previous
+function consoleLogThurstersPower (up_thruster, down_thruster, left_thruster, right_thruster) {
+    try {
+        let time_now = Date.now()
+        console.log((time_now-previous)/100)
+        previous = time_now
 
+        console.log("up_thruster:    " + up_thruster)
+        console.log("down_thruster:  " + down_thruster)
+        console.log("left_thruster:  " + left_thruster)
+        console.log("right_thruster: " + right_thruster)
 
-
+    } catch (err) {
+        console.log(err)
+    }
+}
