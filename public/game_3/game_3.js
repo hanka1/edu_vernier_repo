@@ -53,6 +53,9 @@ function startNewGame () {
 //to restart game properties
 function init () {
     try{
+        resetStopWatch()
+        startStopWatch()
+
         c.fillStyle = "black"
         c.fillRect(0 , 0, canvas.width, canvas.height)
 
@@ -90,6 +93,7 @@ function animate() {
 
 function gameOver() {
     try{
+        clearInterval(stopWatchInterval) //to stop stowatch
         cancelAnimationFrame(animation_id)
         gdxDevice.stop()
         i = 0
