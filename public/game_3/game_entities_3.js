@@ -39,9 +39,10 @@ class Mass {
         this.x_speed = x_speed || 0
         this.y_speed = y_speed || 0
         this.rotation_speed = rotation_speed || 0
-        //todo force calculation
+
         this.force = this.mass * Math.sqrt(this.x_speed * this.x_speed + this.y_speed * this.y_speed)
         this.in_dock = false
+        this.is_ship = false
     }
 
     update (ctx) {
@@ -54,13 +55,13 @@ class Mass {
         //return back if hit to the wall
         if (this.x + this.radius > ctx.canvas.width || this.x - this.radius < 0 ) {
             this.x_speed = - this.x_speed 
-            mySound.play()
+            if (this.is_ship) touch_sound.play()
         }
 
         //to hit top and bottom
         if (this.y + this.radius > ctx.canvas.height || this.y - this.radius < 0 ) {
             this.y_speed = -this.y_speed
-            mySound.play()
+            if (this.is_ship) touch_sound.play()
         }
 
         //in the dock
@@ -75,14 +76,14 @@ class Mass {
             this.x_speed = 0
             this.y_speed = 0
             this.in_dock = true
-            mySound.play()
-            
+            touch_sound.play()
+
         } 
 
         //todo hit the dock top
         if (dock.y - this.radius < this.y && dock.y > this.y &&
             dock.x < this.x && dock.x + dock.width > this.x ){
-                mySound.play()
+                if (this.is_ship) touch_sound.play()
                 this.y_speed = -this.y_speed
             }
             
@@ -90,14 +91,14 @@ class Mass {
         //todo hit the dock bottom
         if (dock.y + dock.height + this.radius > this.y && dock.y + dock.height < this.y &&
             dock.x < this.x && dock.x + dock.width > this.x ){
-                mySound.play()
+                if (this.is_ship) touch_sound.play()
                 this.y_speed = -this.y_speed
             }
             
         //todo hit the dock right side
         if (dock.x + dock.width + this.radius > this.x && dock.x + dock.width - this.radius < this.x &&
             dock.y - this.radius < this.y && dock.y + dock.height + this.radius > this.y ){
-                mySound.play()
+                if (this.is_ship) touch_sound.play()
                 this.x_speed = -this.x_speed
             }
             
@@ -156,30 +157,24 @@ class Ship extends Mass {
 
         this.max_fuel = SHIP_MAX_FUEL
         this.fuel = this.max_fuel
+        this.crashed = false
+        this.is_ship = true
+
     }
 
     draw (c, guide) {
-        if (ship.in_dock) {
+        if (this.in_dock) {
             this.drawDockedShip(c)
         } else {
             c.save()
             c.translate(this.x, this.y)
-            //c.rotate(this.angle)
-            if (guide && this.compromised) {
-                c.save()
-                c.fillStyle = "red"
-                c.beginPath()
-                c.arc(0, 0, this.radius, 0, 2 * Math.PI)
-                c.fill()
-                c.restore()
-            }
-            draw_ship(c, this.radius, {
+            drawShip(c, this.radius,  {
                 guide: guide,
                 right_thruster: this.right_thruster,
                 left_thruster: this.left_thruster,
                 up_thruster: this.up_thruster,
                 down_thruster: this.down_thruster
-            })
+            }, this.crashed)
             c.restore()
         }
     }
@@ -206,7 +201,7 @@ class Ship extends Mass {
 class Asteroid extends Mass {
     constructor(x, y, mass, x_speed, y_speed, rotation_speed) {
         
-        let density = 1; // kg per square pixel
+        let density = 1 // kg per square pixel
         let radius = Math.sqrt((mass / density) / Math.PI)
         //x, y, mass, radius, angle, x_speed, y_speed, rotation_speed
         super(x, y, mass, radius, 0, x_speed, y_speed, rotation_speed)
@@ -226,7 +221,7 @@ class Asteroid extends Mass {
         ctx.save()
         ctx.translate(this.x, this.y)
         ctx.rotate(this.angle)
-        draw_asteroid(ctx, this.radius, this.shape, {
+        drawAsteroid(ctx, this.radius, this.shape, {
             noise: this.noise,
             guide: guide
         })
@@ -278,82 +273,149 @@ class Indicator {
     }
 }
 
-function draw_ship(ctx, radius, options) {
-    options = options || {}
-    let angle = (options.angle || 0.5 * Math.PI) / 2
-    ctx.save()
-
-    //ship
-    ctx.lineWidth = options.lineWidth || 2
-    ctx.strokeStyle = options.stroke || "orange"
-    ctx.fillStyle = options.fill || "blue"
-    ctx.beginPath() // draw the ship in four lines
-    ctx.moveTo(-Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))//to statr draw a ship into moving context into origin
-    ctx.quadraticCurveTo(0, 0, -Math.sqrt((radius*radius)/2), Math.sqrt((radius*radius)/2))
-    ctx.quadraticCurveTo(0, 0, Math.sqrt((radius*radius)/2), Math.sqrt((radius*radius)/2))
-    ctx.quadraticCurveTo(0, 0, Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))
-    ctx.quadraticCurveTo(0, 0, -Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))
-
-    ctx.fill()
-    ctx.stroke()
-
-    ctx.strokeStyle = "blue"
-    ctx.lineWidth = 1
-    ctx.fillStyle = "orange"
-    ctx.beginPath()
-    ctx.arc(0, 0, radius/2, 0, 2 * Math.PI)
-    ctx.fill()
-    ctx.stroke()
-
-    ctx.strokeStyle = "blue"
-    ctx.lineWidth = 1
-    ctx.fillStyle = "yellow"
-    ctx.beginPath()
-    ctx.arc(0, 0, radius/4, 0, 2 * Math.PI)
-    ctx.fill()
-    ctx.stroke()
-
-     //draw thrusters if on
-    if (options.up_thruster || options.down_thruster || 
-        options.left_thruster || options.right_thruster ){
-            ctx.strokeStyle = "yellow"
-            ctx.fillStyle = "red"
-            ctx.lineWidth = 3
-            ctx.save()
-            ctx.beginPath()
-            if(options.left_thruster) {
-                ctx.moveTo(- radius/2 - 2, - radius/4)
-                ctx.quadraticCurveTo(- radius - options.left_thruster*12, 0, - radius / 2 - 2, radius / 4)
-            }
-            if(options.right_thruster) {
-                ctx.moveTo(+ radius/2 + 2, - radius/4)
-                ctx.quadraticCurveTo(+ radius + options.right_thruster*12, 0, radius / 2 + 2,  radius / 4)
-            }
-            if(options.up_thruster) {
-                ctx.moveTo( - radius/4, - radius/2 - 2,)
-                ctx.quadraticCurveTo(0, - radius - options.up_thruster*12, radius / 4, - radius / 2 - 2, )
-            }
-            if(options.down_thruster) {
-                ctx.moveTo( + radius/4, + radius/2 + 2,)
-                ctx.quadraticCurveTo(0, + radius + options.down_thruster*12, - radius / 4, + radius / 2 + 2, )
-            }
-            ctx.fill()
-            ctx.stroke()
-            ctx.restore()
+const friction = 0.98
+class Particle {
+    constructor (x, y, radius, color, velocity) {
+        this.x = x 
+        this.y = y 
+        this.radius = radius
+        this.color = color
+        this.velocity = velocity
+        this.alpha = 1 //always 1, to fade out over time
     }
+    draw () {
+        c.save() //put game into a state
+        c.GlobalAlpha = this.alpha
     
-    // a guide line and circle show the control point
-    if (options.guide) {
-        ctx.strokeStyle = "white"
-        ctx.lineWidth = 0.5
-        ctx.beginPath()
-        ctx.arc(0, 0, radius, 0, 2 * Math.PI)
-        ctx.stroke()
+        c.beginPath()
+        c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false)
+        c.fillStyle = this.color
+        c.fill()
+        
+        c.beginPath()
+        c.rect(this.x - 2 * Math.random, this.y - 2 * Math.random , this.radius * 2, this.radius * 3)
+        c.fillStyle = this.color
+        c.fill()
+    
+        c.restore() //finish of state
     }
-    ctx.restore()
+    update() {
+        this.draw()
+        this.velocity.x *= friction //to enhace disapeare efekt
+        this.velocity.y *= friction
+        this.x = this.x + this.velocity.x
+        this.y = this.y + this.velocity.y
+        this.alpha -= 0.015 //slowly to fade out
+    }
 }
 
-function draw_asteroid(ctx, radius, shape, options) {
+let color_i = 0
+function drawShip(ctx, radius, options, crashed) {
+    try{
+        let color_stroke_1 = options.stroke || "orange"
+        let color_stroke_2 = "blue"
+        let color_fill_1 = options.fill || "blue"
+        let color_fill_2 = "orange"
+        let color_fill_3 = "yellow"
+        options = options || {}
+
+        if (crashed){
+
+            options.up_thruster = false
+            options.down_thruster = false 
+            options.left_thruster = false 
+            options.right_thruster = false
+
+            color_i += 1
+            color_stroke_1 = "red"
+            color_fill_2 = "red"
+            color_fill_3 = "orange"
+            
+            if (color_i >= 10 ){
+                color_stroke_1 = "orange"
+                color_fill_2 = "yellow"
+                color_fill_3 = "red"
+            }
+            color_i = color_i >= 20 ? 0 : color_i
+        }
+
+        ctx.save()
+
+        //ship
+        ctx.lineWidth = options.lineWidth || 2
+        ctx.strokeStyle = color_stroke_1
+        ctx.fillStyle = color_fill_1
+        ctx.beginPath() // draw the ship in four lines
+        ctx.moveTo(-Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))//to statr draw a ship into moving context into origin
+        ctx.quadraticCurveTo(0, 0, -Math.sqrt((radius*radius)/2), Math.sqrt((radius*radius)/2))
+        ctx.quadraticCurveTo(0, 0, Math.sqrt((radius*radius)/2), Math.sqrt((radius*radius)/2))
+        ctx.quadraticCurveTo(0, 0, Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))
+        ctx.quadraticCurveTo(0, 0, -Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))
+
+        ctx.fill()
+        ctx.stroke()
+
+        ctx.strokeStyle = color_stroke_2 
+        ctx.lineWidth = 1
+        ctx.fillStyle = color_fill_2 
+        ctx.beginPath()
+        ctx.arc(0, 0, radius/2, 0, 2 * Math.PI)
+        ctx.fill()
+        ctx.stroke()
+
+        ctx.strokeStyle = color_stroke_2
+        ctx.lineWidth = 1
+        ctx.fillStyle = color_fill_3
+        ctx.beginPath()
+        ctx.arc(0, 0, radius/4, 0, 2 * Math.PI)
+        ctx.fill()
+        ctx.stroke()
+
+        //draw thrusters if on
+        if (options.up_thruster || options.down_thruster || 
+            options.left_thruster || options.right_thruster ){
+                ctx.strokeStyle = "yellow"
+                ctx.fillStyle = "red"
+                ctx.lineWidth = 3
+                ctx.save()
+                ctx.beginPath()
+                if(options.left_thruster) {
+                    ctx.moveTo(- radius/2 - 2, - radius/4)
+                    ctx.quadraticCurveTo(- radius - options.left_thruster*12, 0, - radius / 2 - 2, radius / 4)
+                }
+                if(options.right_thruster) {
+                    ctx.moveTo(+ radius/2 + 2, - radius/4)
+                    ctx.quadraticCurveTo(+ radius + options.right_thruster*12, 0, radius / 2 + 2,  radius / 4)
+                }
+                if(options.up_thruster) {
+                    ctx.moveTo( - radius/4, - radius/2 - 2,)
+                    ctx.quadraticCurveTo(0, - radius - options.up_thruster*12, radius / 4, - radius / 2 - 2, )
+                }
+                if(options.down_thruster) {
+                    ctx.moveTo( + radius/4, + radius/2 + 2,)
+                    ctx.quadraticCurveTo(0, + radius + options.down_thruster*12, - radius / 4, + radius / 2 + 2, )
+                }
+                ctx.fill()
+                ctx.stroke()
+                ctx.restore()
+        }
+    
+        // a guide line and circle show the control point
+        if (options.guide) {
+            ctx.strokeStyle = "white"
+            ctx.lineWidth = 0.5
+            ctx.beginPath()
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI)
+            ctx.stroke()
+        }
+
+        ctx.restore()
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function drawAsteroid(ctx, radius, shape, options) {
     options = options || {}
     ctx.strokeStyle = options.stroke || "white"
     ctx.fillStyle = options.fill || "silver"
@@ -385,7 +447,7 @@ function draw_asteroid(ctx, radius, shape, options) {
     ctx.restore()
 }
 
-function draw_grid(ctx, minor, major, stroke, fill) {
+function drawGrid(ctx, minor, major, stroke, fill) {
     minor = minor || 10
     major = major || minor * 5
     stroke = stroke || "#00FF00"
@@ -472,7 +534,7 @@ function draw_grid(ctx, minor, major, stroke, fill) {
 }
 
 //to control thrusters for test and dev only
-function key_handler(e, value) {
+function keyHandler(e, value) {
     var nothing_handled = false
     
     if (value){
@@ -511,7 +573,7 @@ function key_handler(e, value) {
     if(!nothing_handled) e.preventDefault();
 }
 
-function draw_line(ctx, obj1, obj2) {
+function drawLine(ctx, obj1, obj2) {
     ctx.save()
     ctx.strokeStyle = "white"
     ctx.lineWidth = 0.5
@@ -523,8 +585,7 @@ function draw_line(ctx, obj1, obj2) {
 }
 
 function collision(obj1, obj2) {
-    console.log()
-    return distance_between(obj1, obj2) < (obj1.radius + obj2.radius)
+    return distance_between(obj1, obj2) < (obj1.radius + obj2.radius) * 0.7
 }
 function distance_between(obj1, obj2) {
     return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2))

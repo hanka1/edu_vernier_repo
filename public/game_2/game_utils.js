@@ -67,9 +67,9 @@ function animateParticles () {
         particles.forEach((particle, particle_index) => {
             if (particle.alpha <= 0){
                 particles.splice(particle_index, 1) //remove particle
-            } else (
+            } else {
                 particle.update()
-            )
+            }
         })
         
     } catch (err) {

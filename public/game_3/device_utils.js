@@ -44,8 +44,10 @@ async function connectDevice () {
 
         //to set control sensor from device
         startGameBox.hidden = true
-        gdxDevice = await godirect.selectDevice(bluetooth)
         connectDeviceBox.hidden = true
+        gdxDevice = await godirect.selectDevice(bluetooth)
+        
+
         output.textContent += `\nConnected to `+ gdxDevice.name + `\n`
         
         gdxDevice.on('device-closed', () => {

@@ -18,8 +18,12 @@ let particles = []
 let asteroids = []
 let ship
 let guide = GUIDE_LINES
-let mySound = new Sound(CRASH_SOUND_1)
+let touch_sound = new Sound(CRASH_SOUND_1)
+let ship_crash_sound = new Sound(SHIP_CRASH_SOUND)
+let ship_win_sound =  new Sound(SHIP_WIN_SOUND)
 let fuel_indicator = new Indicator( 45, 12, 120, 12)
+let ship_collision = false
+let endGameEffectInterval 
 
 function draw() {
     try{
@@ -27,16 +31,20 @@ function draw() {
         dock.draw(c) 
 
         if (guide)
-            draw_grid(c)
+            drawGrid(c)
 
         asteroids.forEach((asteroid)=>{
             asteroid.draw(c, guide)
             if (guide)
-                draw_line(c, asteroid, ship)
+                drawLine(c, asteroid, ship)
         })
 
         ship.draw(c, guide)
         fuel_indicator.draw(c, ship.fuel, ship.max_fuel)
+
+        particles.forEach((particle, particle_index) => {
+                particle.draw()
+        })
         
     } catch (err) {
         console.log(err)
@@ -46,9 +54,12 @@ function draw() {
 //todo collisions, score, time measuring
 function update(){
     try{
+        animateParticles()
         //ship.compromised = false
         if (ship.in_dock){
+            ship_win_sound.play()
             output.textContent += ("YOU WIN!\n")
+
             gameOver()
         }
 
@@ -60,8 +71,17 @@ function update(){
         for (let i = 0; i < asteroids.length; i++){
             
             //ship collision
-            if (collision (asteroids[i], ship)) {
-                //todo
+            if (collision (asteroids[i], ship) && !ship_collision && !ship.in_dock) {
+                ship_collision = true
+                ship.crashed = true
+
+                endGameEffect()
+                setTimeout(() => { 
+                    output.textContent += ("SHIP CRASHED!\n")
+                    gameOver()
+                }, 3000)
+
+                
             }
 
             //asteroids collision
@@ -157,6 +177,69 @@ function spawnAsteroids() {
             asteroids.push(asteroid) //to add asteroit to asterois array
         }
 
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function endGameEffect() {
+    try {  
+        ship_crash_sound.play() 
+
+        let color_array = ["yellow", "orange", "red"]
+        endGameEffectInterval = setInterval(() => {
+                color_array.forEach((color) => {
+                    particles.push(
+                        new Particle(ship.x, ship.y, 
+                            Math.random() * 3, 
+                            color, 
+                            { 
+                                x:  ( ship.x * (Math.random() - 0.5) / 100),  //how big and which direction particles flies
+                                y:  ( ship.y * (Math.random() - 0.5) / 100) 
+                            }
+                        )
+                    )
+                })
+      
+        }, 40) //each 60 ms
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function createParticles() {
+    try {  
+        // to create particles after projectile hits the enemy
+        for (let i = 0; i < enemy.radius * 2; i++){
+            particles.push(
+                new Particle(projectile.x + BODY_MARGIN , projectile.y + BODY_MARGIN, 
+                    Math.random() * 2, 
+                    enemy.color, 
+                    { 
+                        x: (Math.random() - 0.5) * Math.random() * 5, //how big and random direction particles flies
+                        y: (Math.random() - 0.5) * Math.random() * 5
+                    }
+                )
+            )
+        }  
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function animateParticles () {
+    try { 
+
+        particles.forEach((particle, particle_index) => {
+            if (particle.alpha <= 0){
+                particles.splice(particle_index, 1) //remove particle
+            } else {
+                particle.update()
+                console.log()
+            }
+        })
+        
     } catch (err) {
         console.log(err)
     }

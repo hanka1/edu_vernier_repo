@@ -40,10 +40,12 @@ function startNewGame () {
         startGameBox.hidden = true 
         particles = []
         asteroids = []
+        ship_collision = false
         init() 
         animate()
         gdxDevice.start()
         console.log ("GAME STARTED \n")
+        clearInterval(endGameEffectInterval)
 
     } catch (err) {
         console.log(err)
@@ -83,6 +85,9 @@ function animate() {
             //TODO
             gameOver()
         }
+        //console.log(ship.speed())
+        //console.log(ship.movement_angle())
+        //console.log('*************')
  
     } catch (err) {
         console.log(err)
@@ -111,9 +116,9 @@ function gameOver() {
 
 //for testing and dev only
 c.canvas.addEventListener("keydown", (e) => {
-    key_handler(e, true)
+    keyHandler(e, true)
 }, true)
    
 c.canvas.addEventListener("keyup", (e) => {
-    key_handler(e, false)
+    keyHandler(e, false)
 }, true)
