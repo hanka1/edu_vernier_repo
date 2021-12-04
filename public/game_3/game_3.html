@@ -25,8 +25,9 @@
     
 
         <div class='game_score' >
-            <span>Score: </span><span style="font-size: 150%" id = 'scoreEl'>0</span><br>
             <span>Time: </span><span style="font-size: 150%" id = 'timeEl'>00:00:00</span>
+            <span hidden="true" >Score: </span><span hidden="true" style="font-size: 150%" id = 'scoreEl'>0</span>
+            
         </div>
 
         <div class='game_score_info' >
@@ -34,16 +35,14 @@
         </div>
     
         <div class='flex_center' id='startGameBox'>
-                <h2 id='scoreTotalEl'>0</h2>
-                <p>POINTS</p>
+                <h2 id='scoreTotalEl'>ENJOY THE GAME</h2>
                 <p>
-                    <button id="startGameBtn"> Start a new game </button>
                     <p id="config_game" class="config_game" >
-                        <label for="enemy_spawn_speed">TODO a config or delete</label>
-                        <input class="config_game_input" id="game_config_input" type="number" min="1" max="10" value="6" required>
-                        <span>config </span><br>
-                        To be set from 1 to 10.<br>
-                        <br><br>
+                        <label for="enemy_spawn_speed">Set number of asteroids: </label>
+                        <input class="config_game_input" id="game_config_input" type="number" min="0" max="100" value="3" required>
+                        <span></span>
+                        <br><br><br>
+                    <button id="startGameBtn"> Start a new game </button><br><br><br>
                     <button id="disconnectDeviceBtn" class="button_stop"> Disconnect Device </button>
                     </p>
                 </p>
@@ -78,7 +77,7 @@
         <p></p>
             2. The force applied to an object is equal to the mass of the object multiplied by the resultant acceleration.
         <p></p>
-            3. When one mass pushes another, it will be pushed back with equal and opposite force
+            3. When one mass pushes another, it will be pushed back with equal and opposite force.
         </p>
     </div> 
     

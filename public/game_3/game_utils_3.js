@@ -58,12 +58,14 @@ function update(){
         //ship.compromised = false
         if (ship.in_dock){
             ship_win_sound.play()
+            scoreTotalEl.innerHTML = "YOU WIN !"
             output.textContent += ("YOU WIN!\n")
 
             gameOver()
         }
 
         if (ship.fuel <= 0 ){
+            scoreTotalEl.innerHTML = "SHIP OUT OF FUEL !"
             output.textContent += ("SHIP OUT OF FUEL!\n")
             gameOver()
         }
@@ -77,6 +79,7 @@ function update(){
 
                 endGameEffect()
                 setTimeout(() => { 
+                    scoreTotalEl.innerHTML = "SHIP CRASHED !"
                     output.textContent += ("SHIP CRASHED!\n")
                     gameOver()
                 }, 3000)

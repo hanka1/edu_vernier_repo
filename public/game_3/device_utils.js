@@ -61,8 +61,7 @@ async function connectDevice () {
 
     } catch (err) {
         console.log(err)
-        output.textContent += (err.toString())
-        output.textContent += ('Try to reload page and/or switch off / switch on device.')
+        output.textContent += ('\nReload page and/or reconnect the device.\n')
     }
 }
 

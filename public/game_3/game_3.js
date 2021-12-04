@@ -6,6 +6,7 @@ const playGameWithDevice = async () => {
       try {
         startNewGame()
 
+
         let sensor_values = {x: false, y: false, z: false}
         gdxDevice.sensors.forEach( sensor => {
             sensor.on('value-changed', (sensor) => {
@@ -64,11 +65,12 @@ function init () {
         dock = new Dock (DOCK_X , DOCK_Y, 100, 70, 'rgb(200, 231, 240)' )
         ship = new Ship(canvas.width / 2, canvas.height / 2, SHIP_MASS)
 
+        ASTEROIDS_TOTAL = document.getElementById("game_config_input").value
         spawnAsteroids()
 
-        score = 0
-        scoreEl.innerHTML = score
-        scoreTotalEl.innerHTML = score
+        //score = 0
+        //scoreEl.innerHTML = score
+        //scoreTotalEl.innerHTML = score
         
     } catch (err) {
         console.log(err)
@@ -105,7 +107,7 @@ function gameOver() {
         output.textContent += ("GAME OVER \n")
         setTimeout(() => {
             startGameBox.hidden = false
-            scoreTotalEl.innerHTML = score               
+            //scoreTotalEl.innerHTML = score               
         }, 2000)
         
 

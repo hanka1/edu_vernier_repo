@@ -16,14 +16,14 @@ const SHIP_MASS = 200 //200 for smaller mass ship move quicker
 const SHIP_MAX_FUEL = 500 //500
 
 //ASTEROIDS
-const ASTEROIDS_TOTAL = 3//3 number of spawned asteroids
+let ASTEROIDS_TOTAL = 3//3 number of spawned asteroids, to be config from start button
 const ASTEROIDS_SIZE = 200 //200, partly randomized in given range
 //bigger asteroids with the same initial push force will move more slowly
 const PUSH_ASTEROID_FORCE = 200 //200
  
 
 //SOUNDS
-const CRASH_SOUND_1 = "../sounds/snow_crash.mp3"
+const CRASH_SOUND_1 = "../sounds/touch.mp3"
 const SHIP_CRASH_SOUND = "../sounds/ship_asteroid_crash.mp3"
 const SHIP_WIN_SOUND = "../sounds/ship_win.mp3"
 
