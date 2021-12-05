@@ -102,11 +102,11 @@ function update(){
                     asteroids[i].collision_set.add(asteroids[j].id)
                     asteroids[j].collision_set.add(asteroids[i].id)
 
-                    //to set that collision is not  any more - to withdraw from set
+                    //to set that collision is not any more - to withdraw from set
                     setTimeout(()=>{
                         asteroids[i].collision_set.delete(asteroids[j].id)
                         asteroids[j].collision_set.delete(asteroids[i].id)
-                    }, 2000)
+                    }, 1000)
 
                 }
             }
@@ -140,7 +140,7 @@ function solveCollision (obj1, obj2) {
         let speed = vector_relative_speed.x * vector_normalized_collision.x + vector_relative_speed.y * vector_normalized_collision.y
 
         if (speed < 0) {
-           return
+            return
         }
 
         //the collision impulse
