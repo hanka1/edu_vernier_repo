@@ -1,3 +1,5 @@
+let guide = GUIDE_LINES
+
 class Dock {
     constructor (x, y, width, height, color) {
         this.x = x
@@ -29,6 +31,7 @@ class Dock {
 
 let dock
 
+let id_set = 0
 class Mass {
     constructor (x, y, mass, radius, angle, x_speed, y_speed, rotation_speed) {
         this.x = x
@@ -40,9 +43,11 @@ class Mass {
         this.y_speed = y_speed || 0
         this.rotation_speed = rotation_speed || 0
 
-        this.force = this.mass * Math.sqrt(this.x_speed * this.x_speed + this.y_speed * this.y_speed)
         this.in_dock = false
         this.is_ship = false
+        this.id = id_set
+        id_set++
+        this.collision_set = new Set([])
     }
 
     update (ctx) {
@@ -103,11 +108,10 @@ class Mass {
             }
             
         //todo edge and corner cases
-        //this.force = this.mass * Math.sqrt(this.x * this.x + this.y * this.y)
     
     }
 
-    //to implement Newton’s second law:
+    //initial mass movement
     //to apply the force to the mass, causing acceleration, 
     //that is inversely proportional to the mass
     push (angle, force) {
@@ -125,7 +129,7 @@ class Mass {
         return Math.sqrt(Math.pow(this.x_speed, 2) + Math.pow(this.y_speed, 2))
     }
     movement_angle () {
-        return Math.atan2(this.y_speed, this.x_speed);
+        return Math.atan2(this.y_speed, this.x_speed)
     }
 
     draw (c) {
@@ -138,10 +142,6 @@ class Mass {
         c.strokeStyle = "#FFFFFF"
         c.stroke()
         c.restore()
-    }
-
-    massCollisionDetected (c) {
-
     }
 
 }
@@ -221,10 +221,15 @@ class Asteroid extends Mass {
         ctx.save()
         ctx.translate(this.x, this.y)
         ctx.rotate(this.angle)
-        drawAsteroid(ctx, this.radius, this.shape, {
-            noise: this.noise,
-            guide: guide
-        })
+        drawAsteroid(ctx, {
+            radius: this.radius, 
+            shape: this.shape,
+            x: this.x, y: this.y,
+            x_speed: this.x_speed, y_speed: this.y_speed,
+            options: {
+                noise: this.noise,
+                guide: guide
+            }})
         ctx.restore()
     }
 
@@ -415,10 +420,13 @@ function drawShip(ctx, radius, options, crashed) {
     }
 }
 
-function drawAsteroid(ctx, radius, shape, options) {
-    options = options || {}
-    ctx.strokeStyle = options.stroke || "white"
-    ctx.fillStyle = options.fill || "silver"
+function drawAsteroid(ctx, asteroid) {
+    let radius = asteroid.radius
+    let shape = asteroid.shape
+    let options = asteroid.options || {}
+    ctx.strokeStyle = asteroid.options.stroke || "white"
+    ctx.fillStyle = asteroid.options.fill || "silver"
+
     ctx.save()
     ctx.beginPath()
 
@@ -431,22 +439,34 @@ function drawAsteroid(ctx, radius, shape, options) {
     ctx.fill()
     ctx.stroke()
 
+    //for testing and development
     if (options.guide) {
         ctx.lineWidth = 0.5
+        ctx.strokeStyle = "white"
         ctx.beginPath()
         ctx.arc(0, 0, radius, 0, 2 * Math.PI)
         ctx.stroke()
         ctx.beginPath()
         ctx.lineWidth = 0.2
+        ctx.strokeStyle = "white"
         ctx.arc(0, 0, radius + radius * options.noise, 0, 2 *Math.PI)
         ctx.stroke()
         ctx.beginPath()
         ctx.arc(0, 0, radius - radius * options.noise, 0, 2 *Math.PI)
         ctx.stroke()
+
+        //heading vector
+        ctx.strokeStyle = "yellow"
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.moveTo(0, 0)
+        ctx.lineTo((0+ asteroid.x_speed*100), (0 + asteroid.y_speed*100))
+        ctx.stroke()
     }
     ctx.restore()
 }
 
+//for testing and development
 function drawGrid(ctx, minor, major, stroke, fill) {
     minor = minor || 10
     major = major || minor * 5
@@ -533,7 +553,7 @@ function drawGrid(ctx, minor, major, stroke, fill) {
     c.restore();
 }
 
-//to control thrusters for test and dev only
+//to control thrusters by arrow keys for test and dev
 function keyHandler(e, value) {
     var nothing_handled = false
     
@@ -573,6 +593,7 @@ function keyHandler(e, value) {
     if(!nothing_handled) e.preventDefault();
 }
 
+//for testing and development
 function drawLine(ctx, obj1, obj2) {
     ctx.save()
     ctx.strokeStyle = "white"
@@ -584,10 +605,13 @@ function drawLine(ctx, obj1, obj2) {
     ctx.restore()
 }
 
-function collision(obj1, obj2) {
-    return distance_between(obj1, obj2) < (obj1.radius + obj2.radius) * 0.7
+function collision (obj1, obj2) {
+    if (obj1.is_ship || obj2.is_ship)
+        return distance_between(obj1, obj2) < (obj1.radius + obj2.radius) * 0.7
+    return distance_between(obj1, obj2) < (obj1.radius + obj2.radius)
 }
-function distance_between(obj1, obj2) {
+
+function distance_between (obj1, obj2) {
     return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2))
 }
 
@@ -632,8 +656,8 @@ function timeToString(time) {
   
     return `${formattedMM}:${formattedSS}:${formattedMS}`
 }
-////
 
+////
 //for development and testing
 let previous
 function consoleLogThurstersPower (up_thruster, down_thruster, left_thruster, right_thruster) {

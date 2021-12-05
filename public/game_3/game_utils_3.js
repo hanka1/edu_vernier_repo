@@ -17,7 +17,6 @@ let i = 0
 let particles = []
 let asteroids = []
 let ship
-let guide = GUIDE_LINES
 let touch_sound = new Sound(CRASH_SOUND_1)
 let ship_crash_sound = new Sound(SHIP_CRASH_SOUND)
 let ship_win_sound =  new Sound(SHIP_WIN_SOUND)
@@ -51,11 +50,9 @@ function draw() {
     }
 }
 
-//todo collisions, score, time measuring
 function update(){
     try{
         animateParticles()
-        //ship.compromised = false
         if (ship.in_dock){
             ship_win_sound.play()
             scoreTotalEl.innerHTML = "YOU WIN !"
@@ -78,26 +75,77 @@ function update(){
                 ship.crashed = true
 
                 endGameEffect()
+
+                //push ship and asteriod after collision
+                solveCollision(ship, asteroids[i])
+
                 setTimeout(() => { 
                     scoreTotalEl.innerHTML = "SHIP CRASHED !"
                     output.textContent += ("SHIP CRASHED!\n")
                     gameOver()
                 }, 3000)
-
-                
             }
 
             //asteroids collision
             for (let j = 0; j < asteroids.length; j++){
-        
-                if (collision (asteroids[i], asteroids[j]) && asteroids[i] != asteroids[j]) {
-                    //todo
+  
+                if (
+                    asteroids[i].id != asteroids[j].id && 
+                    collision (asteroids[i], asteroids[j]) && 
+                    ! asteroids[i].collision_set.has(asteroids[j].id) &&
+                    ! asteroids[j].collision_set.has(asteroids[i].id)) {
+
+                    //push asteriods after collision
+                    solveCollision(asteroids[i], asteroids[j])
+           
+                    //to save that collision exists 
+                    asteroids[i].collision_set.add(asteroids[j].id)
+                    asteroids[j].collision_set.add(asteroids[i].id)
+
+                    //to set that collision is not any more - to withdraw from set
+                    setTimeout(()=>{
+                        asteroids[i].collision_set.delete(asteroids[j].id)
+                        asteroids[j].collision_set.delete(asteroids[i].id)
+                    }, 1000)
+
                 }
             }
             asteroids[i].update(c)
         }
         ship.update(c)
         
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function solveCollision (obj1, obj2) {
+    try {
+
+        let vector_collision = {
+            x: obj2.x - obj1.x, 
+            y: obj2.y - obj1.y}
+        let vector_collision_distance = Math.sqrt((obj2.x-obj1.x)*(obj2.x-obj1.x) + (obj2.y-obj1.y)*(obj2.y-obj1.y))
+        //to calculate collision direction
+        let vector_normalized_collision = {
+            x: vector_collision.x / vector_collision_distance, 
+            y: vector_collision.y / vector_collision_distance 
+        }
+        //vector relative velocity of the objects, like the vector if one of the objects is stationary
+        let vector_relative_speed = {
+            x: obj1.x_speed - obj2.x_speed, 
+            y: obj1.y_speed - obj2.y_speed 
+        }
+        //speed of the collision
+        let speed = vector_relative_speed.x * vector_normalized_collision.x + vector_relative_speed.y * vector_normalized_collision.y
+
+        if (speed < 0) {
+            return
+        }
+
+        //the collision impulse
+        let impulse = 2 * speed / (obj1.mass + obj2.mass)
+
     } catch (err) {
         console.log(err)
     }
@@ -163,13 +211,16 @@ function spawnAsteroids() {
             let x = Math.random() * c.canvas.width
             let y = Math.random() * c.canvas.height
 
-            //not to spawn near the border or dock
+            //not to spawn near the border or dock or ship
             if ( x < 2 * radius || y < 2 * radius 
                 ||
                 x > c.canvas.width - 2 * radius || y > c.canvas.height - 2 * radius 
                 ||
                 ( x > dock.x - 2 * radius && x < dock.x + dock.width + 2 * radius && 
                   y > dock.y - 2 * radius && y < dock.y + dock.height + 2 * radius )
+                ||
+                ( x > c.canvas.width / 2 - 3 * radius && x < c.canvas.width / 2 + 3 * radius &&
+                  y > c.canvas.height / 2 - 3 * radius && y < c.canvas.height / 2 + 3 * radius )
             )
                 continue
 
