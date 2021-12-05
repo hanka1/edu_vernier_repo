@@ -207,15 +207,20 @@ function updateEachThruster (sensor_value, thruster) {
 
 function spawnAsteroids() {
     try {
+        if (CONFIG_OWN_ASTEROID)
+            ASTEROIDS_TOTAL = ASTEROIDS_ARRAY.length
+
         let i = 0
         while ( i < ASTEROIDS_TOTAL ) {
 
-            let size = ASTEROIDS_SIZE + Math.random() * ASTEROIDS_SIZE * 5
+            let size = CONFIG_OWN_ASTEROID ? ASTEROIDS_ARRAY[i].size : ASTEROIDS_SIZE + Math.random() * ASTEROIDS_SIZE * 5
+            let force = CONFIG_OWN_ASTEROID ? ASTEROIDS_ARRAY[i].force : PUSH_ASTEROID_FORCE
 
-            let radius = Math.sqrt( size / Math.PI)
             let x = Math.random() * c.canvas.width
             let y = Math.random() * c.canvas.height
-
+            let movement_angle = Math.random() * 2 * Math.PI
+            let radius = Math.sqrt( size / Math.PI)
+            
             //not to spawn near the border or dock or ship
             if ( x < 2 * radius || y < 2 * radius 
                 ||
@@ -228,12 +233,14 @@ function spawnAsteroids() {
                   y > c.canvas.height / 2 - 3 * radius && y < c.canvas.height / 2 + 3 * radius )
             )
                 continue
-
-            i++
             let asteroid = new Asteroid(x, y, size)
-            asteroid.push(Math.random() * 2 * Math.PI, PUSH_ASTEROID_FORCE)//to push asteroid to move
+
+            //to push asteroid to move
+            asteroid.push(movement_angle, force)
+
             //asteroid.twist((Math.random()-0.5) * 200, 60)
             asteroids.push(asteroid) //to add asteroit to asterois array
+            i++
         }
 
     } catch (err) {
