@@ -16,7 +16,7 @@ const SHIP_MASS = 200 //200 for smaller mass ship move quicker
 const SHIP_MAX_FUEL = 500 //500
 
 //ASTEROIDS
-let ASTEROIDS_TOTAL = 3//3 number of spawned asteroids, to be config from start button
+let ASTEROIDS_TOTAL = 3 //3 number of spawned asteroids, to be config from start button
 const ASTEROIDS_SIZE = 200 //200, partly randomized in given range
 //bigger asteroids with the same initial push force will move more slowly
 const PUSH_ASTEROID_FORCE = 200 //200
@@ -30,4 +30,4 @@ const SHIP_WIN_SOUND = "../sounds/ship_win.mp3"
 
 //DEVELOPMENT TOOLS
 //to set to true click also can just click on canvas during game, and press 'g' key
-const GUIDE_LINES = false //to be set to 'true' to see help lines
+const GUIDE_LINES = false //to be set to 'true' to see help lines for development and testing

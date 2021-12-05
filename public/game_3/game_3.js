@@ -1,6 +1,8 @@
+//uncomment for testing without device
 //startNewGame()
 //connectDeviceBox.hidden = true
 //startGameBox.hidden = true
+//ASTEROIDS_TOTAL - to be commented in init() function
 
 const playGameWithDevice = async () => { 
       try {
@@ -36,6 +38,7 @@ connectDeviceBtn.addEventListener('click', connectDevice )
 startGameBtn.addEventListener('click', playGameWithDevice )
 disconnectDeviceBtn.addEventListener('click', disconnectDevice )
 
+//to reset initial variables
 function startNewGame () {
     try{
         startGameBox.hidden = true 
@@ -64,13 +67,11 @@ function init () {
 
         dock = new Dock (DOCK_X , DOCK_Y, 100, 70, 'rgb(200, 231, 240)' )
         ship = new Ship(canvas.width / 2, canvas.height / 2, SHIP_MASS)
+        //ship = new Ship(-canvas.width - 50, - canvas.height - 50, SHIP_MASS) //ship out of canvas for tests
 
         ASTEROIDS_TOTAL = document.getElementById("game_config_input").value
         spawnAsteroids()
 
-        //score = 0
-        //scoreEl.innerHTML = score
-        //scoreTotalEl.innerHTML = score
         
     } catch (err) {
         console.log(err)
@@ -83,13 +84,7 @@ function animate() {
         c.clearRect(0, 0, c.canvas.width, c.canvas.height)
         update()
         draw()
-        if ( i > 12000 ) {
-            //TODO
-            gameOver()
-        }
-        //console.log(ship.speed())
-        //console.log(ship.movement_angle())
-        //console.log('*************')
+
  
     } catch (err) {
         console.log(err)
@@ -100,7 +95,7 @@ function animate() {
 
 function gameOver() {
     try{
-        clearInterval(stopWatchInterval) //to stop stowatch
+        clearInterval(stopWatchInterval) //to stop stopwatch
         cancelAnimationFrame(animation_id)
         gdxDevice.stop()
         i = 0
