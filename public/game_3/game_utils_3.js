@@ -12,14 +12,15 @@ const c = canvas.getContext('2d')
 
 let animation_id
 let score = 0
-let i = 0
+let i = 0 //for testing and development only
 
 let particles = []
 let asteroids = []
 let ship
-let touch_sound = new Sound(CRASH_SOUND_1)
+let touch_sound = new Sound(WALL_HIT_SOUND_1)
 let ship_crash_sound = new Sound(SHIP_CRASH_SOUND)
 let ship_win_sound =  new Sound(SHIP_WIN_SOUND)
+let ship_out_of_fuel_sound  = new Sound(SHIP_OUT_OF_FUEL)
 let fuel_indicator = new Indicator( 45, 12, 120, 12)
 let ship_collision = false
 let endGameEffectInterval 
@@ -57,11 +58,11 @@ function update(){
             ship_win_sound.play()
             scoreTotalEl.innerHTML = "YOU WIN !"
             output.textContent += ("YOU WIN!\n")
-
             gameOver()
         }
 
         if (ship.fuel <= 0 ){
+            ship_out_of_fuel_sound.play()
             scoreTotalEl.innerHTML = "SHIP OUT OF FUEL !"
             output.textContent += ("SHIP OUT OF FUEL!\n")
             gameOver()
@@ -110,7 +111,6 @@ function update(){
                         asteroids[i].collision_set.delete(asteroids[j].id)
                         asteroids[j].collision_set.delete(asteroids[i].id)
                     }, 1000)
-
                 }
             }
             asteroids[i].update(c)
@@ -160,7 +160,7 @@ function solveCollision (obj1, obj2) {
 }
 
 
-//todo solve sensor values
+//to solve sensor values
 function updateShipThrusters (sensor_values) {
     try {
         i++ //i for testing and development only

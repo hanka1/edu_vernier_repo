@@ -7,8 +7,7 @@
 const playGameWithDevice = async () => { 
       try {
         startNewGame()
-
-
+        //to get and solve sensor values as thrusters are powered on
         let sensor_values = {x: false, y: false, z: false}
         gdxDevice.sensors.forEach( sensor => {
             sensor.on('value-changed', (sensor) => {
@@ -47,8 +46,8 @@ function startNewGame () {
         ship_collision = false
         init() 
         animate()
-        gdxDevice.start()
-        console.log ("GAME STARTED \n")
+        gdxDevice.start() //to start getting sensors values
+        console.log("GAME STARTED \n")
         clearInterval(endGameEffectInterval)
 
     } catch (err) {
@@ -72,7 +71,6 @@ function init () {
         ASTEROIDS_TOTAL = document.getElementById("game_config_input").value
         spawnAsteroids()
 
-        
     } catch (err) {
         console.log(err)
     }
@@ -85,11 +83,10 @@ function animate() {
         update()
         draw()
 
- 
     } catch (err) {
         console.log(err)
-        output.textContent += (err.toString())
-        output.textContent += ('Try to reload page and/or switch off / switch on device.')
+        output.textContent += (err.toString()+'\n')
+        output.textContent += ('\nTry to reload page and/or switch off / switch on device.\n')
     }
 }
 
@@ -97,21 +94,21 @@ function gameOver() {
     try{
         clearInterval(stopWatchInterval) //to stop stopwatch
         cancelAnimationFrame(animation_id)
-        gdxDevice.stop()
-        i = 0
+        gdxDevice.stop() //to stop getting sensors values
+        i = 0 //for testing and development only
         output.textContent += ("GAME OVER \n")
         setTimeout(() => {
             startGameBox.hidden = false
             //scoreTotalEl.innerHTML = score               
         }, 2000)
-        
-
+    
     } catch (err) {
         console.log(err)
     }
 }
 
 //for testing and dev only
+//if uncommented thruster can be controled also with key arrows
 c.canvas.addEventListener("keydown", (e) => {
     keyHandler(e, true)
 }, true)

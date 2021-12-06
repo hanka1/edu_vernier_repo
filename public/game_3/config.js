@@ -16,9 +16,10 @@ const SHIP_MASS = 200 //200 for smaller mass ship move quicker
 const SHIP_MAX_FUEL = 500 //500
 
 //SOUNDS
-const CRASH_SOUND_1 = "../sounds/touch.mp3"
+const WALL_HIT_SOUND_1 = "../sounds/touch.mp3"
 const SHIP_CRASH_SOUND = "../sounds/ship_asteroid_crash.mp3"
 const SHIP_WIN_SOUND = "../sounds/ship_win.mp3"
+const SHIP_OUT_OF_FUEL = "../sounds/out_of_fuel.mp3"
 
 
 //DEVELOPMENT TOOLS
