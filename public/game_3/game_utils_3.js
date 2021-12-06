@@ -54,7 +54,7 @@ function draw() {
 function update(){
     try{
         animateParticles()
-        if (ship.in_dock){
+        if (ship.in_dock && !ship.crashed){
             ship_win_sound.play()
             scoreTotalEl.innerHTML = "YOU WIN !"
             output.textContent += ("YOU WIN!\n")
@@ -80,8 +80,13 @@ function update(){
                 if(!ship_collision){
                     endGameEffect()
                     setTimeout(() => { 
-                        scoreTotalEl.innerHTML = "SHIP CRASHED !"
-                        output.textContent += ("SHIP CRASHED!\n")
+                        if (ship.in_dock){
+                            scoreTotalEl.innerHTML = "SHIP CRASHED & CREW SURVIVED !"
+                            output.textContent += ("SHIP CRASHED & CREW SURVIVED !\n")
+                        } else {
+                            scoreTotalEl.innerHTML = "SHIP CRASHED !"
+                            output.textContent += ("SHIP CRASHED!\n")
+                        }
                         gameOver()
                     }, 3000)
 

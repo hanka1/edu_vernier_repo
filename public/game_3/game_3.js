@@ -67,6 +67,7 @@ function init () {
         dock = new Dock (DOCK_X , DOCK_Y, 100, 70 )
         ship = new Ship(canvas.width / 2, canvas.height / 2, SHIP_MASS)
         //ship = new Ship(-canvas.width - 50, - canvas.height - 50, SHIP_MASS) //ship out of canvas for tests
+        //ship = new Ship(dock.x - 10, dock.y + 40, SHIP_MASS) //ship in front of the dock for tests
 
         ASTEROIDS_TOTAL = document.getElementById("game_config_input").value
         spawnAsteroids()
