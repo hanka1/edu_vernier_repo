@@ -70,20 +70,23 @@ function update(){
         for (let i = 0; i < asteroids.length; i++){
             
             //ship collision
-            if (collision (asteroids[i], ship) && !ship_collision && !ship.in_dock) {
-                ship_collision = true
+            if (collision (asteroids[i], ship) && !ship.in_dock) {
                 ship.crashed = true
-
-                endGameEffect()
 
                 //push ship and asteriod after collision
                 solveCollision(asteroids[i], ship)
 
-                setTimeout(() => { 
-                    scoreTotalEl.innerHTML = "SHIP CRASHED !"
-                    output.textContent += ("SHIP CRASHED!\n")
-                    gameOver()
-                }, 3000)
+                if(!ship_collision){
+                    endGameEffect()
+                    setTimeout(() => { 
+                        scoreTotalEl.innerHTML = "SHIP CRASHED !"
+                        output.textContent += ("SHIP CRASHED!\n")
+                        gameOver()
+                    }, 3000)
+
+                }
+                
+                ship_collision = true
             }
 
             //asteroids collision
