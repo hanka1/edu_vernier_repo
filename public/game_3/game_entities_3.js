@@ -1,20 +1,29 @@
 let guide = GUIDE_LINES
 
 class Dock {
-    constructor (x, y, width, height, color) {
+    constructor (x, y, width, height) {
         this.x = x
         this.y = y 
         this.width = width 
         this.height = height 
-        this.color = color
+
     }
     draw (c) {
         c.save()
         c.beginPath()
+
+        let gradient = c.createRadialGradient(this.x + this.width * 0.8 ,this.y + this.height * 0.7 , 
+            10, this.x + this.width*0.55, this.y + this.height * 0.55, this.height)        
+        gradient.addColorStop("0","rgb(145, 226, 215)")
+        gradient.addColorStop("1","rgb(14, 61, 88)")   
+        c.fillStyle =  gradient
+
         c.rect(this.x, this.y, this.width, this.height)
-        c.fillStyle = this.color
         c.fill()
 
+        c.save()
+        c.beginPath()
+        c.rect(this.x, this.y+3, this.width-3, this.height-6)
         c.lineWidth = 6
         c.strokeStyle =  "rgb(14, 61, 88)"
         c.stroke()
@@ -22,8 +31,22 @@ class Dock {
 
         c.save()
         c.beginPath()
-        c.rect(this.x - 5, this.y - 5, 15, this.height + 10)
+        c.rect(this.x - 3, this.y + 6 , 6, this.height - 12)
         c.fillStyle = 'black'
+        c.fill()
+        c.restore()
+
+        c.save()
+        c.beginPath()
+        c.arc(this.x - 1.5 , this.y + 3 , 3,  0, 2  *Math.PI)
+        c.fillStyle =  "rgb(14, 61, 88)"
+        c.fill()
+        c.restore()
+
+        c.save()
+        c.beginPath()
+        c.arc(this.x-1.5 , this.y + this.height - 3 , 3,  0, 2  *Math.PI)
+        c.fillStyle =  "rgb(14, 61, 88)"
         c.fill()
         c.restore()
     }
@@ -46,6 +69,7 @@ class Mass {
         this.in_dock = false
         this.is_ship = false
         this.id = id_set
+        this.hit_state = false
         id_set++
         this.collision_set = new Set([])
     }
@@ -57,58 +81,110 @@ class Mass {
         this.angle += this.rotation_speed 
         this.angle %= (2 * Math.PI)
 
-        //return back if hit to the wall
-        if (this.x + this.radius > ctx.canvas.width || this.x - this.radius < 0 ) {
-            this.x_speed = - this.x_speed 
-            if (this.is_ship) touch_sound.play()
+        //behind walls
+        //if(!this.is_ship){ //for develoment only
+            if (this.x < 0 + this.radius/2 )
+                this.x += 2 * this.radius
+            if (this.x > ctx.canvas.width - this.radius/2 )
+                this.x -= 2 * this.radius
+            if (this.y < 0 + this.radius/2 )
+                this.y += 2 * this.radius
+            if (this.y > ctx.canvas.height - this.radius/2 )
+                this.y -= 2 * this.radius
+
+        //}
+
+        //hit side walls
+        if (this.x > ctx.canvas.width - this.radius|| this.x  < 0 + this.radius) {
+            this.changeXY_speedDirection(true, false)
         }
 
-        //to hit top and bottom
-        if (this.y + this.radius > ctx.canvas.height || this.y - this.radius < 0 ) {
-            this.y_speed = -this.y_speed
-            if (this.is_ship) touch_sound.play()
+        //hit top and bottom wall
+        if (this.y  > ctx.canvas.height - this.radius || this.y  < 0 + this.radius) {
+            this.changeXY_speedDirection(false, true)
+        }
+
+        //dock door inside corners
+        if (this.x >= dock.x - this.radius && this.x <= dock.x){
+            if (this.y >= dock.y -this.radius && this.y <= dock.y + this.radius){
+                this.changeXY_speedDirection(true, true)
+
+            } else if (this.y >= dock.y + dock.height - this.radius && this.y <= dock.y + dock.height + this.radius){
+                this.changeXY_speedDirection(true, true)
+            }
+        }
+
+        //dock top
+        else if (this.y >= dock.y - this.radius && this.y <= dock.y ){
+            //top left corner
+            if (this.x >= dock.x - this.radius && this.x <= dock.x){
+                this.changeXY_speedDirection(true, true)
+            }
+            //top right corner
+            else if (this.x <= dock.x + dock.width + this.radius && this.x >= dock.x + dock.width){
+                this.changeXY_speedDirection(true, true)
+            }
+            //dock top
+            else if ( this.x >= dock.x && this.x <= dock.x + dock.width ){
+                this.changeXY_speedDirection(false, true)
+            }
+
+        } 
+       
+        //dock bottom
+        else if (this.y <= dock.y + dock.height + this.radius && this.y >= dock.y + dock.height ){
+            //bottom left corner
+            if (this.x >= dock.x - this.radius && this.x <= dock.x){
+                this.changeXY_speedDirection(true, true)
+            }
+            //bottom right corner
+            else if (this.x <= dock.x + dock.width + this.radius && this.x >= dock.x + dock.width){
+                this.changeXY_speedDirection(true, true)
+            }
+            //dock bottom
+            else if (this.x >= dock.x && this.x <= dock.x + dock.width){
+                this.changeXY_speedDirection(false, true)
+            }
+        }
+
+        //dock right side
+        else if (this.y >= dock.y && this.y <= dock.y + dock.height &&
+                 this.x >= dock.x + dock.width && this.x <= dock.x + dock.width + this.radius){
+                    this.changeXY_speedDirection(true, false)
         }
 
         //in the dock
-        if ( 
-            dock.y + this.radius < this.y &&
-            dock.y + dock.height - this.radius > this.y &&
-            dock.x < this.x &&
-            dock.x + dock.width/2 > this.x
-        ){
-            this.x = dock.x + dock.width - this.radius
-            this.y = dock.y + dock.height - this.radius
-            this.x_speed = 0
-            this.y_speed = 0
-            this.in_dock = true
-            touch_sound.play()
-
+        else if (this.y > dock.y + this.radius && this.y < dock.y + dock.height - this.radius &&
+                 this.x >= dock.x  && this.x < dock.x + dock.width - this.radius){
+            if (this.radius * 2 > dock.height) {
+                this.changeXY_speedDirection(true, false)
+            } else {
+                this.x = dock.x + dock.width - this.radius
+                this.y = dock.y + dock.height - this.radius
+                this.x_speed = 0
+                this.y_speed = 0
+                this.in_dock = true
+                touch_sound.play()
+                //console.log(this.id + ' in the dock')
+            }
         } 
+    }
 
-        //todo hit the dock top
-        if (dock.y - this.radius < this.y && dock.y > this.y &&
-            dock.x < this.x && dock.x + dock.width > this.x ){
-                if (this.is_ship) touch_sound.play()
-                this.y_speed = -this.y_speed
-            }
-            
-
-        //todo hit the dock bottom
-        if (dock.y + dock.height + this.radius > this.y && dock.y + dock.height < this.y &&
-            dock.x < this.x && dock.x + dock.width > this.x ){
-                if (this.is_ship) touch_sound.play()
-                this.y_speed = -this.y_speed
-            }
-            
-        //todo hit the dock right side
-        if (dock.x + dock.width + this.radius > this.x && dock.x + dock.width - this.radius < this.x &&
-            dock.y - this.radius < this.y && dock.y + dock.height + this.radius > this.y ){
-                if (this.is_ship) touch_sound.play()
-                this.x_speed = -this.x_speed
-            }
-            
-        //todo edge and corner cases
-    
+    changeXY_speedDirection(change_x_speed, change_y_speed) {
+        if (this.hit_state){
+            return
+        } else {
+            this.hit_state = true
+            if (change_x_speed)
+                this.x_speed = - this.x_speed 
+            if (change_y_speed)
+                this.y_speed = - this.y_speed
+            if (this.is_ship) 
+                touch_sound.play()
+            setTimeout(() => { 
+                this.hit_state = false
+                }, 250)
+        }
     }
 
     //initial mass movement
@@ -182,9 +258,9 @@ class Ship extends Mass {
     drawDockedShip (c) {
         c.save()
         let image = new Image
-        image.src = '../images/ship2.png'
+        image.src = '../images/ship5.png'
         c.beginPath()
-        c.drawImage(image, dock.x + dock.width / 2, dock.y + 4)
+        c.drawImage(image, dock.x + dock.width / 2, dock.y + 7 , )
         c.restore()
     }
 
@@ -218,19 +294,25 @@ class Asteroid extends Mass {
     }
     
     draw (ctx, guide) {
-        ctx.save()
-        ctx.translate(this.x, this.y)
-        ctx.rotate(this.angle)
-        drawAsteroid(ctx, {
-            radius: this.radius, 
-            shape: this.shape,
-            x: this.x, y: this.y,
-            x_speed: this.x_speed, y_speed: this.y_speed,
-            options: {
-                noise: this.noise,
-                guide: guide
-            }})
-        ctx.restore()
+        if (this.in_dock) {
+            this.radius = 0
+            drawDockedAsteriod(ctx)
+        } else {
+            ctx.save()
+            ctx.translate(this.x, this.y)
+            ctx.rotate(this.angle)
+            drawAsteroid(ctx, {
+                radius: this.radius, 
+                shape: this.shape,
+                x: this.x, y: this.y,
+                x_speed: this.x_speed, y_speed: this.y_speed,
+                id: this.id,
+                options: {
+                    noise: this.noise,
+                    guide: guide
+                }})
+            ctx.restore()
+        }
     }
 
 }
@@ -318,7 +400,7 @@ let color_i = 0
 function drawShip(ctx, radius, options, crashed) {
     try{
         let color_stroke_1 = options.stroke || "orange"
-        let color_stroke_2 = "blue"
+        let color_stroke_2 = "rgb(14, 61, 88)"
         let color_fill_1 = options.fill || "blue"
         let color_fill_2 = "orange"
         let color_fill_3 = "yellow"
@@ -332,14 +414,14 @@ function drawShip(ctx, radius, options, crashed) {
             options.right_thruster = false
 
             color_i += 1
-            color_stroke_1 = "red"
-            color_fill_2 = "red"
-            color_fill_3 = "orange"
+            color_stroke_1 = "rgb(255, 62, 3)"
+            color_fill_2 = "rgb(240, 20, 3)"
+            color_fill_3 = "rgb(255, 205, 3)"
             
             if (color_i >= 10 ){
                 color_stroke_1 = "orange"
-                color_fill_2 = "yellow"
-                color_fill_3 = "red"
+                color_fill_2 = "rgb(255, 163, 3)"
+                color_fill_3 = "rgb(240, 20, 3)"
             }
             color_i = color_i >= 20 ? 0 : color_i
         }
@@ -350,6 +432,7 @@ function drawShip(ctx, radius, options, crashed) {
         ctx.lineWidth = options.lineWidth || 2
         ctx.strokeStyle = color_stroke_1
         ctx.fillStyle = color_fill_1
+        ctx.lineWidth = 3.8
         ctx.beginPath() // draw the ship in four lines
         ctx.moveTo(-Math.sqrt((radius*radius)/2), -Math.sqrt((radius*radius)/2))//to statr draw a ship into moving context into origin
         ctx.quadraticCurveTo(0, 0, -Math.sqrt((radius*radius)/2), Math.sqrt((radius*radius)/2))
@@ -361,7 +444,7 @@ function drawShip(ctx, radius, options, crashed) {
         ctx.stroke()
 
         ctx.strokeStyle = color_stroke_2 
-        ctx.lineWidth = 1
+        ctx.lineWidth = 1.8
         ctx.fillStyle = color_fill_2 
         ctx.beginPath()
         ctx.arc(0, 0, radius/2, 0, 2 * Math.PI)
@@ -369,7 +452,7 @@ function drawShip(ctx, radius, options, crashed) {
         ctx.stroke()
 
         ctx.strokeStyle = color_stroke_2
-        ctx.lineWidth = 1
+        ctx.lineWidth = 1.8
         ctx.fillStyle = color_fill_3
         ctx.beginPath()
         ctx.arc(0, 0, radius/4, 0, 2 * Math.PI)
@@ -421,11 +504,17 @@ function drawShip(ctx, radius, options, crashed) {
 }
 
 function drawAsteroid(ctx, asteroid) {
+
     let radius = asteroid.radius
     let shape = asteroid.shape
     let options = asteroid.options || {}
-    ctx.strokeStyle = asteroid.options.stroke || "white"
-    ctx.fillStyle = asteroid.options.fill || "silver"
+
+    let gradient = ctx.createRadialGradient(5,5,8,radius*0.8,radius*0.8,radius*3.5)        
+    gradient.addColorStop("0","rgb(170, 170, 200")// Adds a color stop to a gradient. A color stop is a position in the gradient where a color 							change occurs. The offset must be between 0 and 1.
+    gradient.addColorStop("0.9","rgb(35, 35, 80")
+
+    ctx.strokeStyle = asteroid.options.stroke || "grey"
+    ctx.fillStyle = asteroid.options.fill || gradient
 
     ctx.save()
     ctx.beginPath()
@@ -445,6 +534,7 @@ function drawAsteroid(ctx, asteroid) {
         ctx.strokeStyle = "white"
         ctx.beginPath()
         ctx.arc(0, 0, radius, 0, 2 * Math.PI)
+        ctx.fillText(asteroid.id, 10, 50);
         ctx.stroke()
         ctx.beginPath()
         ctx.lineWidth = 0.2
@@ -457,12 +547,27 @@ function drawAsteroid(ctx, asteroid) {
 
         //heading vector
         ctx.strokeStyle = "yellow"
-        ctx.lineWidth = 2
+        ctx.lineWidth = 1
         ctx.beginPath()
         ctx.moveTo(0, 0)
-        ctx.lineTo((0+ asteroid.x_speed*100), (0 + asteroid.y_speed*100))
+        ctx.lineTo((0+ asteroid.x_speed*50), (0 + asteroid.y_speed*50))
         ctx.stroke()
     }
+    ctx.restore()
+}
+
+function drawDockedAsteriod(ctx, asteroid) {
+
+    ctx.save()
+    ctx.beginPath()
+ 
+    ctx.fillStyle = "rgb(170, 170, 200)"
+    ctx.rect(dock.x + 0.8 * dock.width - 6, dock.y + 6 , dock.width * 0.2, dock.height * 0.15)
+    ctx.fill()
+
+    ctx.lineWidth = 3
+    ctx.strokeStyle =  "rgb(10, 50, 80)"
+    ctx.stroke()
     ctx.restore()
 }
 
@@ -500,50 +605,42 @@ function drawGrid(ctx, minor, major, stroke, fill) {
     
     ctx.restore()
 
-    c.save();
-
-    c.strokeStyle = "red"
-    c.lineWidth = 1;
-    c.beginPath();
-    c.moveTo( dock.x -20 , dock.y - 20,);
-    c.lineTo( dock.x + dock.width + 20 , dock.y - 20,);
-    c.stroke(); 
-    c.closePath();
+    c.save()
 
     c.strokeStyle = "orange"
-    c.lineWidth = 1;
-    c.beginPath();
-    c.moveTo( dock.x -20 , dock.y +10 ,);
-    c.lineTo( dock.x + dock.width + 20 , dock.y +10 );
-    c.stroke(); 
-    c.closePath();
+    c.lineWidth = 1
+    c.beginPath()
+    c.moveTo( dock.x -20 , dock.y - 20,)
+    c.lineTo( dock.x + dock.width + 20 , dock.y - 20,)
+    c.stroke()
+    c.closePath()
 
-    c.strokeStyle = "yellow"
-    c.lineWidth = 1;
-    c.beginPath();
-    c.moveTo( dock.x + dock.width + 20 , dock.y - 20);
-    c.lineTo( dock.x + dock.width + 20 , dock.y + dock.height + 20);
-    c.stroke(); 
-    c.closePath();
+    c.beginPath()
+    c.moveTo( dock.x -20 , dock.y + 10 )
+    c.lineTo( dock.x + dock.width + 20 , dock.y + 10 )
+    c.stroke()
+    c.closePath()
 
-    c.strokeStyle = "orange"
-    c.lineWidth = 1;
-    c.beginPath();
-    c.moveTo( dock.x + dock.width - 10 , dock.y - 20);
-    c.lineTo( dock.x + dock.width -10 , dock.y + dock.height + 20);
-    c.stroke(); 
-    c.closePath();
+    c.beginPath()
+    c.moveTo( dock.x + dock.width + 20 , dock.y - 20)
+    c.lineTo( dock.x + dock.width + 20 , dock.y + dock.height + 20)
+    c.stroke()
+    c.closePath()
 
-    c.strokeStyle = "red"
-    c.lineWidth = 1;
+    c.beginPath()
+    c.moveTo( dock.x + dock.width - 10 , dock.y - 20)
+    c.lineTo( dock.x + dock.width -10 , dock.y + dock.height + 20)
+    c.stroke()
+    c.closePath()
+
+
     c.beginPath();
     c.moveTo( dock.x + dock.width + 20  , dock.y + dock.height + 20);
     c.lineTo( dock.x -20 , dock.y + dock.height + 20);
     c.stroke(); 
     c.closePath();
 
-    c.strokeStyle = "orange"
-    c.lineWidth = 1;
+
     c.beginPath();
     c.moveTo( dock.x + dock.width + 20  , dock.y + dock.height - 10 ,);
     c.lineTo( dock.x -20 , dock.y + dock.height - 10  );
@@ -597,7 +694,7 @@ function keyHandler(e, value) {
 function drawLine(ctx, obj1, obj2) {
     ctx.save()
     ctx.strokeStyle = "white"
-    ctx.lineWidth = 0.5
+    ctx.lineWidth = 0.2
     ctx.beginPath()
     ctx.moveTo(obj1.x, obj1.y)
     ctx.lineTo(obj2.x, obj2.y)
@@ -607,7 +704,7 @@ function drawLine(ctx, obj1, obj2) {
 
 function collision (obj1, obj2) {
     if (obj1.is_ship || obj2.is_ship)
-        return distance_between(obj1, obj2) < (obj1.radius + obj2.radius) * 0.7
+        return distance_between(obj1, obj2) < (obj1.radius + obj2.radius) * 0.85
     return distance_between(obj1, obj2) < (obj1.radius + obj2.radius)
 }
 

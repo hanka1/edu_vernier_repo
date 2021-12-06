@@ -65,7 +65,7 @@ function init () {
         c.fillStyle = "black"
         c.fillRect(0 , 0, canvas.width, canvas.height)
 
-        dock = new Dock (DOCK_X , DOCK_Y, 100, 70, 'rgb(200, 231, 240)' )
+        dock = new Dock (DOCK_X , DOCK_Y, 100, 70 )
         ship = new Ship(canvas.width / 2, canvas.height / 2, SHIP_MASS)
         //ship = new Ship(-canvas.width - 50, - canvas.height - 50, SHIP_MASS) //ship out of canvas for tests
 
