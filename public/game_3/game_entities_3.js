@@ -81,60 +81,42 @@ class Mass {
         this.angle += this.rotation_speed 
         this.angle %= (2 * Math.PI)
 
-        //behind walls
-        //if(!this.is_ship){ //for develoment only
-            if (this.x < 0 + this.radius/2 )
-                this.x += 2 * this.radius
-            if (this.x > ctx.canvas.width - this.radius/2 )
-                this.x -= 2 * this.radius
-            if (this.y < 0 + this.radius/2 )
-                this.y += 2 * this.radius
-            if (this.y > ctx.canvas.height - this.radius/2 )
-                this.y -= 2 * this.radius
-
-        //}
-
-        if (!this.in_dock){
-            if (this.x > dock.x + 2 * this.radius && this.x < dock.x + dock.width + this.radius){
-                if (this.y >= dock.y && this.y <= dock.y + this.radius)
-                    this.y -= 2 * this.radius
-                if (this.y <= dock.y + dock.height && this.y >= dock.y + dock.height - this.radius)
-                    this.y += 2 * this.radius
-            }
-            if (this.y >= dock.y - this.radius  && this.y <= dock.y + dock.height + this.radius &&
-                this.x < dock.x + dock.width && this.x > dock.x + dock.width - this.radius){
-                   this.x += 2 * this.radius
+        let border_radius = this.radius
+        for (let i = 10; i > 0; i -= 0.25){
+            if (this.radius && this.speed() > this.radius * i){
+                border_radius = this.radius * (i + 0.25) 
+                break
             }
         }
 
         //hit side walls
-        if (this.x > ctx.canvas.width - this.radius|| this.x  < 0 + this.radius) {
+        if (this.x > ctx.canvas.width - border_radius|| this.x  < 0 + border_radius) {
             this.changeXY_speedDirection(true, false)
         }
 
         //hit top and bottom wall
-        if (this.y  > ctx.canvas.height - this.radius || this.y  < 0 + this.radius) {
+        if (this.y  > ctx.canvas.height - border_radius || this.y  < 0 + border_radius) {
             this.changeXY_speedDirection(false, true)
         }
 
         //dock door inside corners
-        if (this.x >= dock.x - this.radius && this.x <= dock.x){
-            if (this.y >= dock.y -this.radius && this.y <= dock.y + this.radius){
+        if (this.x >= dock.x - border_radius && this.x <= dock.x){
+            if (this.y >= dock.y -border_radius && this.y <= dock.y + border_radius){
                 this.changeXY_speedDirection(true, true)
 
-            } else if (this.y >= dock.y + dock.height - this.radius && this.y <= dock.y + dock.height + this.radius){
+            } else if (this.y >= dock.y + dock.height - border_radius && this.y <= dock.y + dock.height + border_radius){
                 this.changeXY_speedDirection(true, true)
             }
         }
 
         //dock top
-        else if (this.y >= dock.y - this.radius && this.y <= dock.y ){
+        else if (this.y >= dock.y - border_radius && this.y <= dock.y ){
             //top left corner
-            if (this.x >= dock.x - this.radius && this.x <= dock.x){
+            if (this.x >= dock.x - border_radius && this.x <= dock.x){
                 this.changeXY_speedDirection(true, true)
             }
             //top right corner
-            else if (this.x <= dock.x + dock.width + this.radius && this.x >= dock.x + dock.width){
+            else if (this.x <= dock.x + dock.width + border_radius && this.x >= dock.x + dock.width){
                 this.changeXY_speedDirection(true, true)
             }
             //dock top
@@ -145,13 +127,13 @@ class Mass {
         } 
        
         //dock bottom
-        else if (this.y <= dock.y + dock.height + this.radius && this.y >= dock.y + dock.height ){
+        else if (this.y <= dock.y + dock.height + border_radius && this.y >= dock.y + dock.height ){
             //bottom left corner
-            if (this.x >= dock.x - this.radius && this.x <= dock.x){
+            if (this.x >= dock.x - border_radius && this.x <= dock.x){
                 this.changeXY_speedDirection(true, true)
             }
             //bottom right corner
-            else if (this.x <= dock.x + dock.width + this.radius && this.x >= dock.x + dock.width){
+            else if (this.x <= dock.x + dock.width + border_radius && this.x >= dock.x + dock.width){
                 this.changeXY_speedDirection(true, true)
             }
             //dock bottom
@@ -162,18 +144,18 @@ class Mass {
 
         //dock right side
         else if (this.y >= dock.y && this.y <= dock.y + dock.height &&
-                 this.x >= dock.x + dock.width && this.x <= dock.x + dock.width + this.radius){
+                 this.x >= dock.x + dock.width && this.x <= dock.x + dock.width + border_radius){
                     this.changeXY_speedDirection(true, false)
         }
 
         //in the dock
-        else if (this.y > dock.y + this.radius && this.y < dock.y + dock.height - this.radius &&
-                 this.x >= dock.x  && this.x < dock.x + dock.width - this.radius){
-            if (this.radius * 2 > dock.height) {
+        else if (this.y > dock.y + border_radius && this.y < dock.y + dock.height - border_radius &&
+                 this.x >= dock.x  && this.x < dock.x + dock.width - border_radius){
+            if (border_radius * 2 > dock.height) {
                 this.changeXY_speedDirection(true, false)
             } else {
-                this.x = dock.x + dock.width - this.radius
-                this.y = dock.y + dock.height - this.radius
+                this.x = dock.x + dock.width - border_radius
+                this.y = dock.y + dock.height - border_radius
                 this.x_speed = 0
                 this.y_speed = 0
                 this.in_dock = true
@@ -559,5 +541,3 @@ function collision (obj1, obj2) {
 function distance_between (obj1, obj2) {
     return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) + Math.pow(obj1.y - obj2.y, 2))
 }
-
-  
