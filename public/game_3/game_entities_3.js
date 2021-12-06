@@ -94,6 +94,19 @@ class Mass {
 
         //}
 
+        if (!this.in_dock){
+            if (this.x > dock.x + 2 * this.radius && this.x < dock.x + dock.width + this.radius){
+                if (this.y >= dock.y && this.y <= dock.y + this.radius)
+                    this.y -= 2 * this.radius
+                if (this.y <= dock.y + dock.height && this.y >= dock.y + dock.height - this.radius)
+                    this.y += 2 * this.radius
+            }
+            if (this.y >= dock.y - this.radius  && this.y <= dock.y + dock.height + this.radius &&
+                this.x < dock.x + dock.width && this.x > dock.x + dock.width - this.radius){
+                   this.x += 2 * this.radius
+            }
+        }
+
         //hit side walls
         if (this.x > ctx.canvas.width - this.radius|| this.x  < 0 + this.radius) {
             this.changeXY_speedDirection(true, false)
