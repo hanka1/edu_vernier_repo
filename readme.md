@@ -10,6 +10,7 @@
   - [Examples](#examples)
     - [Edufor® demo charts](#edufor-demo-charts)
     - [Edufor® demo game - *Game 2*](#edufor-demo-game---game-2)
+    - [How to play *Space ship with/without Vernier device, i.e. accelerator](#how-to-play-space-ship-withwithout-vernier-device-ie-accelerator)
     - [How to play *Game 2* with Vernier device, i.e. accelerator](#how-to-play-game-2-with-vernier-device-ie-accelerator)
     - [Vernier® original examples](#vernier-original-examples)
 - [Javascript examples for your own application](#javascript-examples-for-your-own-application)
@@ -50,21 +51,21 @@ Start with *router.hmtl* page which refers to other demo pages
 - Game 2 can be controlled by GDX-FOR, GDX-ACC, GDX-HD and/or GDX-CART device.
 - By the device controller player can shoot to enemies. The goal is to get points by hitting or destroying of enemies.
 
-### How to play *Game 2* with Vernier device, i.e. accelerator
+### How to play *Space ship with/without Vernier device, i.e. accelerator
 
-- stick the device with acceleration sensors to a plastic plate with a double stick tape
-- switch on the device
-- open the page with game (Game 2), for details see above
-- click to *Start a new game*
-- in a pop up window choose the device in a pop up window and confirm by *Pair*
-- play and control the game by plate rotation
+- see /test_vernier_2/public/game_3/readme.md
+
+### How to play *Game 2* with Vernier device, i.e. accelerator
+- open cmd line
+- enter path to test_vernier_2 folder
+- 
+
+/ 
 
 ![](./public/images/docs/sensor.png)
   
 ### Vernier® original examples
 - There are included originals examples from Vernier. For more examples see https://github.com/VernierST/godirect-examples
-
-
 
 # Javascript examples for your own application
 

@@ -5,6 +5,8 @@ const bleLabel = document.querySelector('#ble_label')
 const startGameBtn = document.querySelector('#startGameBtn')
 const startGameBox = document.querySelector('#startGameBox')
 const connectDeviceBtn = document.querySelector('#connectDeviceBtn')
+const connectDeviceBtn2 = document.querySelector('#connectDeviceBtn2')
+const withoutDeviceBtn = document.querySelector('#withoutDeviceBtn')
 const connectDeviceBox = document.querySelector('#connectDeviceBox')
 const disconnectDeviceBtn = document.querySelector('#disconnectDeviceBtn')
 const output = document.querySelector('#output')
@@ -41,14 +43,16 @@ function chooseControlSensors (device) {
 async function connectDevice () {
     const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"
       try {
-
+        disconnectDevice()
         //to set control sensor from device
         startGameBox.hidden = true
         connectDeviceBox.hidden = true
+        withoutDeviceBtn.hidden = false
+        WITHOUT_VERNIER = false
         gdxDevice = await godirect.selectDevice(bluetooth)
         
 
-        output.textContent += `\nConnected to `+ gdxDevice.name + `\n`
+        output.textContent += `Connected to `+ gdxDevice.name + `\n`
         
         gdxDevice.on('device-closed', () => {
             output.textContent += `Device disconnected.\n`
@@ -68,15 +72,36 @@ async function connectDevice () {
 async function disconnectDevice () {
       try {
 
-        if(!gdxDevice || !gdxDevice.opened)
-            output.textContent += `\nNo device connected.\n`
-        else {
+        if (!gdxDevice || !gdxDevice.opened){
+            output.textContent += `No device connected.\n`
+            startGameBox.hidden = true
+            connectDeviceBtn.hidden = false
+            connectDeviceBox.hidden = false
+
+        } else {
             gdxDevice.close()
             startGameBox.hidden = true
             connectDeviceBox.hidden = false
+            connectDeviceBtn.hidden = false
         }
 
     } catch (err) {
         console.log(err)
     }
+}
+
+// to play game without Vernier device, just with key arrows 
+let WITHOUT_VERNIER = false
+const playGameWithKeys = async () => { 
+    try {
+        disconnectDevice()
+        WITHOUT_VERNIER = true
+        connectDeviceBox.hidden = true
+        disconnectDeviceBtn.hidden = true
+        startGameBox.hidden = false
+        connectDeviceBtn2.hidden = false
+  
+  } catch (err) {
+      console.error(err)
+  }
 }

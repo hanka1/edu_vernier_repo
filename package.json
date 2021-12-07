@@ -5,6 +5,9 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
+    "postinstall": "run-script-os",
+    "postinstall:windows": "postinstall.bat",
+    "postinstall:default": "cd ./router; npm i;",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
@@ -13,6 +16,7 @@
   "dependencies": {
     "@vernier/godirect": "^1.7.1",
     "express": "^4.17.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "run-script-os": "^1.1.6"
   }
 }

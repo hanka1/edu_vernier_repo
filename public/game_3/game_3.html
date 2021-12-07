@@ -10,9 +10,10 @@
   <meta charset="utf-8"> 
   
   <!--import Go Direct library-->
-  <script src="../../node_modules/@vernier/godirect/dist/godirect.min.umd.js"></script>
+  <script src="../node_modules/@vernier/godirect/dist/godirect.min.umd.js"></script>
   <link  href="../style.css" rel="stylesheet">
   <link rel="icon" href="../images/favicon.ico">
+  <img  hidden=true src= "../images/ship5.png"></script>
 
 </head>
 
@@ -42,8 +43,9 @@
                         <input class="config_game_input" id="game_config_input" type="number" min="0" max="100" value="3" required>
                         <span></span>
                         <br><br><br>
-                    <button id="startGameBtn"> Start a new game </button><br><br><br>
-                    <button id="disconnectDeviceBtn" class="button_stop"> Disconnect Device </button>
+                    <button id="startGameBtn">  Start a new game  </button><br><br><br>
+                    <button id="disconnectDeviceBtn" class="button_stop"> Disconnect Device </button><br>
+                    <button id="connectDeviceBtn2" hidden=true>    Connect Device   </button><br>
                     </p>
                 </p>
         </div>
@@ -51,13 +53,14 @@
         <div class='flex_center' id='connectDeviceBox'>
             <p>
                 <br><br><br><br>
-                <button id="connectDeviceBtn"> Connect Device </button>
+                <button id="connectDeviceBtn">Connect Device</button>
                 <p id="connection_type">
                     <input type="radio" id="ble" name="type" value="1" checked>
                     <label id="ble_label" for="ble"> Bluetooth </label>
                     <input type="radio" id="usb" name="type" value="0">
                     <label id="usb_label" for="usb"> USB </label><br><br>
                 </p>
+                <button id="withoutDeviceBtn"> Play without device </button>
             </p>
         </div>
     </div>
@@ -82,6 +85,7 @@
     </div> 
     
     <script src= "config.js"></script>
+    
     <script src= "game_entities_3.js"></script>
     <script src= "game_meters_3.js"></script>
     <script src= "device_utils.js"></script>

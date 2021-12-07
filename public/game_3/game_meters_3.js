@@ -104,7 +104,7 @@ function keyHandler(e, value) {
         default:
             nothing_handled = true
     }
-    if(!nothing_handled) e.preventDefault();
+    if(!nothing_handled) e.preventDefault()
 }
 
 //for testing and development

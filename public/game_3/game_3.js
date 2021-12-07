@@ -1,39 +1,39 @@
-//uncomment for testing without device
-//startNewGame()
-//connectDeviceBox.hidden = true
-//startGameBox.hidden = true
-//ASTEROIDS_TOTAL - to be commented in init() function
-
 const playGameWithDevice = async () => { 
       try {
+
         startNewGame()
-        //to get and solve sensor values as thrusters are powered on
-        let sensor_values = {x: false, y: false, z: false}
-        gdxDevice.sensors.forEach( sensor => {
-            sensor.on('value-changed', (sensor) => {
-                //to shoot on each time sensor values changed
-                if (sensor.name == 'X-axis acceleration'){
-                    sensor_values.x = sensor.value
-                }
-                if (sensor.name == 'Y-axis acceleration'){
-                    sensor_values.y = sensor.value
-                }
-                if (sensor.name == 'Z-axis acceleration'){
-                    sensor_values.z = sensor.value
-                    if (sensor_values.x && sensor_values.y && sensor_values.z){
-                        updateShipThrusters(sensor_values)
-                        sensor_values.x = false  
+
+        if (!WITHOUT_VERNIER){
+            //to get and solve sensor values as thrusters are powered on
+            let sensor_values = {x: false, y: false, z: false}
+            gdxDevice.sensors.forEach( sensor => {
+                sensor.on('value-changed', (sensor) => {
+                    //to shoot on each time sensor values changed
+                    if (sensor.name == 'X-axis acceleration'){
+                        sensor_values.x = sensor.value
                     }
-                }     
+                    if (sensor.name == 'Y-axis acceleration'){
+                        sensor_values.y = sensor.value
+                    }
+                    if (sensor.name == 'Z-axis acceleration'){
+                        sensor_values.z = sensor.value
+                        if (sensor_values.x && sensor_values.y && sensor_values.z){
+                            updateShipThrusters(sensor_values)
+                            sensor_values.x = false
+                        }
+                    }
+                })
             })
-        })
-    
+        }
+
     } catch (err) {
         console.error(err)
     }
 }
 
 connectDeviceBtn.addEventListener('click', connectDevice )
+connectDeviceBtn2.addEventListener('click', connectDevice )
+withoutDeviceBtn.addEventListener('click', playGameWithKeys )
 startGameBtn.addEventListener('click', playGameWithDevice )
 disconnectDeviceBtn.addEventListener('click', disconnectDevice )
 
@@ -46,7 +46,8 @@ function startNewGame () {
         ship_collision = false
         init() 
         animate()
-        gdxDevice.start() //to start getting sensors values
+        if (!WITHOUT_VERNIER)
+            gdxDevice.start() //to start getting sensors values
         console.log("GAME STARTED \n")
         clearInterval(endGameEffectInterval)
 
@@ -70,6 +71,7 @@ function init () {
         //ship = new Ship(dock.x - 10, dock.y + 40, SHIP_MASS) //ship in front of the dock for tests
 
         ASTEROIDS_TOTAL = document.getElementById("game_config_input").value
+
         spawnAsteroids()
 
     } catch (err) {
@@ -95,11 +97,24 @@ function gameOver() {
     try{
         clearInterval(stopWatchInterval) //to stop stopwatch
         cancelAnimationFrame(animation_id)
-        gdxDevice.stop() //to stop getting sensors values
+        if (!WITHOUT_VERNIER)
+            gdxDevice.stop() //to stop getting sensors values
         i = 0 //for testing and development only
         output.textContent += ("GAME OVER \n")
         setTimeout(() => {
             startGameBox.hidden = false
+            startGameBtn.hidden = false
+            withoutDeviceBtn.hidden = false
+            if (WITHOUT_VERNIER)
+                connectDeviceBtn2.hidden = false
+            else {
+                connectDeviceBtn2.hidden = true
+                connectDeviceBtn.hidden = true
+                disconnectDeviceBtn.hidden = false
+            }
+
+              
+
             //scoreTotalEl.innerHTML = score               
         }, 2000)
     
