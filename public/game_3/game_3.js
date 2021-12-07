@@ -1,6 +1,5 @@
-const playGameWithDevice = async () => { 
+const playGame = async () => { 
       try {
-
         startNewGame()
 
         if (!WITHOUT_VERNIER){
@@ -34,7 +33,7 @@ const playGameWithDevice = async () => {
 connectDeviceBtn.addEventListener('click', connectDevice )
 connectDeviceBtn2.addEventListener('click', connectDevice )
 withoutDeviceBtn.addEventListener('click', playGameWithKeys )
-startGameBtn.addEventListener('click', playGameWithDevice )
+startGameBtn.addEventListener('click', playGame )
 disconnectDeviceBtn.addEventListener('click', disconnectDevice )
 
 //to reset initial variables
@@ -47,7 +46,7 @@ function startNewGame () {
         init() 
         animate()
         if (!WITHOUT_VERNIER)
-            gdxDevice.start() //to start getting sensors values
+            gdxDevice.start(DEVICE_COLLECTING_PERIOD) //to start getting sensors values
         console.log("GAME STARTED \n")
         clearInterval(endGameEffectInterval)
 
@@ -112,8 +111,6 @@ function gameOver() {
                 connectDeviceBtn.hidden = true
                 disconnectDeviceBtn.hidden = false
             }
-
-              
 
             //scoreTotalEl.innerHTML = score               
         }, 2000)

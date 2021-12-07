@@ -190,22 +190,23 @@ function updateShipThrusters (sensor_values) {
 function updateEachThruster (sensor_value, thruster) {
     try {
 
+        if (sensor_value < THRUSTER_LIMIT_1 && sensor_value <= THRUSTER_LIMIT_2){
+            ship[thruster] = 0
+        }
+
         if (sensor_value > THRUSTER_LIMIT_1 && sensor_value <= THRUSTER_LIMIT_2){
             ship[thruster] = 1
             ship.fuel -= 1
-            setTimeout(() => { ship[thruster] = false }, 300)
         }
 
         if (sensor_value > THRUSTER_LIMIT_2 && sensor_value <= THRUSTER_LIMIT_3){
             ship[thruster] = 2
             ship.fuel -= 2
-            setTimeout(() => { ship[thruster] = false }, 600)
         }
 
         if (sensor_value > THRUSTER_LIMIT_3){
             ship[thruster] = 3
             ship.fuel -= 3
-            setTimeout(() => { ship[thruster] = false }, 900)
         }
 
     } catch (err) {

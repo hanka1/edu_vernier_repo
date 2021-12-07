@@ -41,27 +41,40 @@ function chooseControlSensors (device) {
 
 //to select a device
 async function connectDevice () {
-    const bluetooth = document.querySelector('input[name="type"]:checked').value === "1"
-      try {
-        disconnectDevice()
-        //to set control sensor from device
-        startGameBox.hidden = true
-        connectDeviceBox.hidden = true
-        withoutDeviceBtn.hidden = false
-        WITHOUT_VERNIER = false
-        gdxDevice = await godirect.selectDevice(bluetooth)
-        
+     try {
 
-        output.textContent += `Connected to `+ gdxDevice.name + `\n`
-        
-        gdxDevice.on('device-closed', () => {
-            output.textContent += `Device disconnected.\n`
+        if (gdxDevice){
+            gdxDevice.close()
+        } else {
             startGameBox.hidden = true
-            connectDeviceBox.hidden = false
-        })
-        chooseControlSensors(gdxDevice) //to choose X,Y,Z-axis acceleration
-        gdxDevice.stop()
-        startGameBox.hidden = false 
+            connectDeviceBox.hidden = true
+            withoutDeviceBtn.hidden = false
+            WITHOUT_VERNIER = false
+
+            //gdxDevice = await godirect.selectDevice(bluetooth)
+            const bleDevice = await navigator.bluetooth.requestDevice({
+                filters: [{ namePrefix: 'GDX' }],
+                optionalServices: ['d91714ef-28b9-4f91-ba16-f0d9a604f112']
+            })
+
+            gdxDevice = await godirect.createDevice(bleDevice,  {open: false, startMeasurements: false})
+
+
+        
+            gdxDevice.on('device-closed', () => {
+                output.textContent += `Device disconnected.\n`
+                startGameBox.hidden = true
+                connectDeviceBox.hidden = false
+                gdxDevice = undefined
+            })
+
+            gdxDevice.on('device-opened', () => {
+                output.textContent += `Device ` + gdxDevice.name + ` opened.\n`
+                startGameBox.hidden = false 
+                chooseControlSensors(gdxDevice) //to choose X,Y,Z-axis acceleration
+            })
+            gdxDevice.open(false)
+        }
 
     } catch (err) {
         console.log(err)

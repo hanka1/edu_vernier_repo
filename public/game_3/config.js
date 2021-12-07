@@ -12,8 +12,9 @@ const THRUSTER_LIMIT_1 = 3.5 //3.5
 const THRUSTER_LIMIT_2 = 6.5 //6.5
 const THRUSTER_LIMIT_3 = 8.5 //8.5
 
+const DEVICE_COLLECTING_PERIOD = 20 //time between samples
 const SHIP_MASS = 200 //200 for smaller mass ship move quicker
-const SHIP_MAX_FUEL = 500 //500
+const SHIP_MAX_FUEL = 5000 //5000
 
 //SOUNDS
 const WALL_HIT_SOUND_1 = "../sounds/touch.mp3"
@@ -28,7 +29,7 @@ const GUIDE_LINES = false //to be set to 'true' to see help lines for developmen
 
 //ASTEROIDS IN GENERAL
 
-//The number of spawned asteroids, to be config before click to the start button 
+//The number of spawned asteroids, to be config from browser before click to the start button 
 //Just for development nad testing purposes
 let ASTEROIDS_TOTAL = 3 //3 
 
