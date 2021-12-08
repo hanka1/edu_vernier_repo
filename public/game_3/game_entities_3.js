@@ -266,6 +266,13 @@ class Ship extends Mass {
         super.push(this.angle - Math.PI/2, - this.left_thruster)
         super.update(context)
     }
+
+    switchOffAllThrusters() {
+        this.right_thruster = false
+        this.left_thruster = false
+        this.up_thruster = false
+        this.down_thruster = false
+    }
 }
 
 class Asteroid extends Mass {

@@ -62,6 +62,7 @@ function update(){
         }
 
         if (ship.fuel <= 0 ){
+            ship.switchOffAllThrusters()
             ship_out_of_fuel_sound.play()
             scoreTotalEl.innerHTML = "SHIP OUT OF FUEL !"
             output.textContent += ("SHIP OUT OF FUEL!\n")
