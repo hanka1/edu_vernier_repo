@@ -37,7 +37,10 @@ button {
     width: 240px;
 }
   
-button:hover {background-color: rgb(135, 219, 137);}
+button:hover {
+    background-color: rgb(175, 216, 175);
+    color:rgb(70, 90, 102);
+}
   
   
 button:active {
@@ -134,7 +137,7 @@ canvas{
     text-align: center;
     border-radius: 15px;
     width: 320px;
-    height: 400px;
+    height: 320px;
     background-color:rgb(200, 231, 240);
     border: 8px solid rgb(14, 61, 88);
 }

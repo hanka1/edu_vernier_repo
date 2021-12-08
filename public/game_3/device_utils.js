@@ -2,17 +2,16 @@ const usbBtn = document.querySelector('#usb')
 const usbLabel = document.querySelector('#usb_label')
 const bleBtn = document.querySelector('#ble')
 const bleLabel = document.querySelector('#ble_label')
-const startGameBtn = document.querySelector('#startGameBtn')
+const startGameBtnDevice = document.querySelector('#startGameBtnDevice')
+const startGameBtnKeyboard = document.querySelector('#startGameBtnKeyboard')
 const startGameBox = document.querySelector('#startGameBox')
 const connectDeviceBtn = document.querySelector('#connectDeviceBtn')
-const withKeyBoardBtn = document.querySelector('#withKeyBoardBtn')
-const disconnectDeviceBtn = document.querySelector('#disconnectDeviceBtn')
 const config_game = document.querySelector('#config_game')
 const connection_type = document.querySelector('#connection_type')
 const output = document.querySelector('#output')
 
 // to play game without Vernier device, just with keyboard arrows 
-let WITHOUT_VERNIER = false
+let WITH_KEYBOARD = false
 let gdxDevice
 
 
@@ -39,6 +38,7 @@ function chooseControlSensors (device) {
 
     } catch (err) {
         console.log(err)
+        return false
     }
 }
 
@@ -56,8 +56,6 @@ async function connectDevice () {
             })
 
             gdxDevice = await godirect.createDevice(bleDevice, {open: false, startMeasurements: false})
-            
-            setStartBox("start_game_device") //to show start game button
 
             gdxDevice.on('device-closed', () => {
                 output.textContent += `Device disconnected.\n`
@@ -66,9 +64,11 @@ async function connectDevice () {
 
             gdxDevice.on('device-opened', () => {
                 output.textContent += `Device ` + gdxDevice.name + ` opened.\n`
-                chooseControlSensors(gdxDevice) //to choose X,Y,Z-axis acceleration
+                if (chooseControlSensors(gdxDevice))//to choose X,Y,Z-axis acceleration
+                    setStartBox() //to show start game buttons
             })
             gdxDevice.open(false)
+ 
         }
 
     } catch (err) {
@@ -77,66 +77,14 @@ async function connectDevice () {
     }
 }
 
-async function disconnectDevice () {
-      try {
-
-        if (!gdxDevice || !gdxDevice.opened)
-            output.textContent += `No device connected.\n`
-        else
-            gdxDevice.close()
-
-        setStartBox('initial')
-
-    } catch (err) {
-        console.log(err)
-    }
-}
-
-async function playGameWithKeys () { 
-    try {
-        disconnectDevice()
-        setStartBox("start_game_keyboard")
-       
-  } catch (err) {
-    console.log(err)
-  }
-}
-
-async function setStartBox (type) { 
+async function setStartBox () { 
     try {
 
-        if (type == "initial"){
-            WITHOUT_VERNIER = false
-            startGameBox.hidden = false
-            connection_type.hidden = false
-            withKeyBoardBtn.hidden = false
-            startGameBtn.hidden = true
-            disconnectDeviceBtn.hidden = true
-            config_game.hidden = true
-            scoreTotalEl.innerHTML = "</br>"
-        }
-
-        if (type == "start_game_device"){
-            WITHOUT_VERNIER = false
-            startGameBox.hidden = false
-            connection_type.hidden = true
-            withKeyBoardBtn.hidden = true
-            startGameBtn.hidden = false
-            startGameBtn.innerHTML = "Start a new game "
-            disconnectDeviceBtn.hidden = false
-            config_game.hidden = false
-        }
-
-        if (type == "start_game_keyboard"){
-            WITHOUT_VERNIER = true
-            startGameBox.hidden = false
-            connection_type.hidden = false
-            withKeyBoardBtn.hidden = true
-            startGameBtn.hidden = false
-            startGameBtn.innerHTML = "Start a keyboard game "
-            disconnectDeviceBtn.hidden = true
-            config_game.hidden = false
-        }
+    connection_type.hidden = true
+    startGameBox.hidden = false
+    startGameBtnKeyboard.hidden = false
+    startGameBtnDevice.hidden = false
+    config_game.hidden = false
 
   } catch (err) {
     console.log(err)

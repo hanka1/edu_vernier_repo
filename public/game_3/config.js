@@ -51,7 +51,3 @@ const GUIDE_LINES = false //to be set to 'true' to see help lines for developmen
 //The number of spawned asteroids, to be config from browser before click to the start button 
 //ASTEROIDS_TOTAL id for development and testing purposes
 let ASTEROIDS_TOTAL = 3 //3 
-
-//if set to true, the game can be controlled by key arrows
-//todo
-const GAME_WITHOUT_VERNIER = true

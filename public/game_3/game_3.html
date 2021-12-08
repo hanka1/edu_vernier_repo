@@ -39,19 +39,20 @@
                 <h2 id='scoreTotalEl'></br></h2>
                 <p>
                     <p id="connection_type">
-                        <button id="connectDeviceBtn">  Play with device  </button><br><br>
+                        <button id="connectDeviceBtn">  Connect device  </button><br><br>
                         <input type="radio" id="ble" name="type" value="1" checked>
                         <label id="ble_label" for="ble"> Bluetooth </label>
                         <input type="radio" id="usb" name="type" value="0">
                         <label id="usb_label" for="usb"> USB </label><br><br>
                     </p>
-                    <button id="disconnectDeviceBtn" class="button_stop" hidden=true> Disconnect Device </button><br>
-                    <button id="withKeyBoardBtn">Play with keyboard</button>
+                    
                     <p id="config_game" class="config_game" hidden=true>
+                    
                         <label>Set number of asteroids: </label>
                         <input class="config_game_input" id="game_config_input" type="number" min="0" max="100" value="3" required>
                         <br><br>
-                        <button id="startGameBtn" hidden=true>  Start a new game  </button><br>
+                        <button id="startGameBtnDevice" hidden=true> Play with device </button><br><br><br>
+                        <button id="startGameBtnKeyboard">Play with keyboard</button>   
                     </p>
             </p>
         </div>

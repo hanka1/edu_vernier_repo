@@ -1,8 +1,34 @@
-async function playGame (){ 
+connectDeviceBtn.addEventListener('click', connectDevice )
+startGameBtnKeyboard.addEventListener('click', chooseKeyboard )
+startGameBtnDevice.addEventListener('click', chooseDevice )
+
+function chooseKeyboard () { 
+    try {
+        WITH_KEYBOARD = true
+        playGame()
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function chooseDevice () { 
+    try {
+        WITH_KEYBOARD = false
+        playGame()
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function playGame () { 
     try {
         startNewGame()
 
-        if (!WITHOUT_VERNIER){
+        if (!WITH_KEYBOARD){
+
+            gdxDevice.start(DEVICE_COLLECTING_PERIOD) //to start getting sensors values
             //to get and solve sensor values as thrusters are powered on
             let sensor_values = {x: false, y: false, z: false}
             gdxDevice.sensors.forEach( sensor => {
@@ -23,31 +49,22 @@ async function playGame (){
                     }
                 })
             })
-        }
+        } 
 
     } catch (err) {
         console.error(err)
     }
 }
 
-connectDeviceBtn.addEventListener('click', connectDevice )
-disconnectDeviceBtn.addEventListener('click', disconnectDevice )
-withKeyBoardBtn.addEventListener('click', playGameWithKeys )
-startGameBtn.addEventListener('click', playGame )
-
-
 //to reset initial variables
 function startNewGame () {
     try{
         startGameBox.hidden = true 
-        console.log("hidden true")
         particles = []
         asteroids = []
         ship_collision = false
         init() 
         animate()
-        if (!WITHOUT_VERNIER)
-            gdxDevice.start(DEVICE_COLLECTING_PERIOD) //to start getting sensors values
         console.log("GAME STARTED \n")
         clearInterval(endGameEffectInterval)
 
@@ -97,16 +114,13 @@ function gameOver() {
     try{
         clearInterval(stopWatchInterval) //to stop stopwatch
         cancelAnimationFrame(animation_id)
-        if (!WITHOUT_VERNIER)
+        if (!WITH_KEYBOARD)
             gdxDevice.stop() //to stop getting sensors values
         i = 0 //for testing and development only
         output.textContent += ("GAME OVER \n")
         
         setTimeout(() => {
-            if (WITHOUT_VERNIER)
-                setStartBox("start_game_keyboard")
-            else 
-                setStartBox("start_game_device")               
+                setStartBox()               
         }, 2000)
     
     } catch (err) {
