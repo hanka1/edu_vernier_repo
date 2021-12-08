@@ -1,5 +1,5 @@
-const playGame = async () => { 
-      try {
+async function playGame (){ 
+    try {
         startNewGame()
 
         if (!WITHOUT_VERNIER){
@@ -31,15 +31,16 @@ const playGame = async () => {
 }
 
 connectDeviceBtn.addEventListener('click', connectDevice )
-connectDeviceBtn2.addEventListener('click', connectDevice )
-withoutDeviceBtn.addEventListener('click', playGameWithKeys )
-startGameBtn.addEventListener('click', playGame )
 disconnectDeviceBtn.addEventListener('click', disconnectDevice )
+withKeyBoardBtn.addEventListener('click', playGameWithKeys )
+startGameBtn.addEventListener('click', playGame )
+
 
 //to reset initial variables
 function startNewGame () {
     try{
         startGameBox.hidden = true 
+        console.log("hidden true")
         particles = []
         asteroids = []
         ship_collision = false
@@ -100,19 +101,12 @@ function gameOver() {
             gdxDevice.stop() //to stop getting sensors values
         i = 0 //for testing and development only
         output.textContent += ("GAME OVER \n")
+        
         setTimeout(() => {
-            startGameBox.hidden = false
-            startGameBtn.hidden = false
-            withoutDeviceBtn.hidden = false
             if (WITHOUT_VERNIER)
-                connectDeviceBtn2.hidden = false
-            else {
-                connectDeviceBtn2.hidden = true
-                connectDeviceBtn.hidden = true
-                disconnectDeviceBtn.hidden = false
-            }
-
-            //scoreTotalEl.innerHTML = score               
+                setStartBox("start_game_keyboard")
+            else 
+                setStartBox("start_game_device")               
         }, 2000)
     
     } catch (err) {
@@ -120,8 +114,7 @@ function gameOver() {
     }
 }
 
-//for testing and dev only
-//if uncommented thruster can be controled also with key arrows
+//thruster can be controled also with keyboard arrows
 c.canvas.addEventListener("keydown", (e) => {
     keyHandler(e, true)
 }, true)

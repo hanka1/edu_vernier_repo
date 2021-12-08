@@ -36,31 +36,23 @@
         </div>
     
         <div class='flex_center' id='startGameBox'>
-                <h2 id='scoreTotalEl'>ENJOY THE GAME</h2>
+                <h2 id='scoreTotalEl'></br></h2>
                 <p>
-                    <p id="config_game" class="config_game" >
+                    <p id="connection_type">
+                        <button id="connectDeviceBtn">  Play with device  </button><br><br>
+                        <input type="radio" id="ble" name="type" value="1" checked>
+                        <label id="ble_label" for="ble"> Bluetooth </label>
+                        <input type="radio" id="usb" name="type" value="0">
+                        <label id="usb_label" for="usb"> USB </label><br><br>
+                    </p>
+                    <button id="disconnectDeviceBtn" class="button_stop" hidden=true> Disconnect Device </button><br>
+                    <button id="withKeyBoardBtn">Play with keyboard</button>
+                    <p id="config_game" class="config_game" hidden=true>
                         <label>Set number of asteroids: </label>
                         <input class="config_game_input" id="game_config_input" type="number" min="0" max="100" value="3" required>
-                        <span></span>
-                        <br><br><br>
-                    <button id="startGameBtn">  Start a new game  </button><br><br><br>
-                    <button id="disconnectDeviceBtn" class="button_stop"> Disconnect Device </button><br>
-                    <button id="connectDeviceBtn2" hidden=true>    Connect Device   </button><br>
+                        <br><br>
+                        <button id="startGameBtn" hidden=true>  Start a new game  </button><br>
                     </p>
-                </p>
-        </div>
-
-        <div class='flex_center' id='connectDeviceBox'>
-            <p>
-                <br><br><br><br>
-                <button id="connectDeviceBtn">Connect Device</button>
-                <p id="connection_type">
-                    <input type="radio" id="ble" name="type" value="1" checked>
-                    <label id="ble_label" for="ble"> Bluetooth </label>
-                    <input type="radio" id="usb" name="type" value="0">
-                    <label id="usb_label" for="usb"> USB </label><br><br>
-                </p>
-                <button id="withoutDeviceBtn"> Play without device </button>
             </p>
         </div>
     </div>
@@ -82,6 +74,15 @@
         <p></p>
             3. When one mass pushes another, it will be pushed back with equal and opposite force.
         </p>
+    </div> 
+
+    <div class="newton_law">
+        <h2>Play game with keyboard</h2>
+        <p></p>
+             - first click to the canvas
+        <p></p>
+            - trusters are controled with arrow keys
+        <p></p>
     </div> 
     
     <script src= "config.js"></script>

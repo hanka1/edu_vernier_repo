@@ -34,6 +34,7 @@ button {
     border-radius: 15px;
     box-shadow: 4px 4px #999;
     color: rgb(14, 61, 88);
+    width: 240px;
 }
   
 button:hover {background-color: rgb(135, 219, 137);}
@@ -133,7 +134,7 @@ canvas{
     text-align: center;
     border-radius: 15px;
     width: 320px;
-    height: 380px;
+    height: 400px;
     background-color:rgb(200, 231, 240);
     border: 8px solid rgb(14, 61, 88);
 }

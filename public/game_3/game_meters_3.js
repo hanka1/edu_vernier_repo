@@ -33,8 +33,8 @@ function startStopWatch() {
     startTime = Date.now() - elapsedTime
     stopWatchInterval = setInterval(() => {
 
-      elapsedTime = Date.now() - startTime
-      document.getElementById("timeEl").innerHTML = timeToString(elapsedTime)
+        elapsedTime = Date.now() - startTime
+        document.getElementById("timeEl").innerHTML = timeToString(elapsedTime)
 
     }, 10) //each 1/100 s
 
