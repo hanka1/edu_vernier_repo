@@ -1,5 +1,6 @@
 connectDeviceBtn.addEventListener('click', connectDevice )
 startGameBtnKeyboard.addEventListener('click', chooseKeyboard )
+startGameBtnKeyboard2.addEventListener('click', chooseKeyboard )
 startGameBtnDevice.addEventListener('click', chooseDevice )
 
 function chooseKeyboard () { 
